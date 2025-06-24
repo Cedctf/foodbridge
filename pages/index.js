@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Geist, Geist_Mono } from "next/font/google";
+import Navbar from "../components/Navbar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -14,43 +15,10 @@ const geistMono = Geist_Mono({
 });
 
 export default function Home() {
-  const [isScrolled, setIsScrolled] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
   return (
     <>
+      <Navbar />
       <div className={`${geistSans.className} min-h-screen bg-gradient-to-br from-green-50 via-white to-emerald-50`}>
-        {/* Navigation */}
-        <nav className={`fixed top-0 w-full z-40 transition-all duration-300 ${isScrolled ? 'bg-white/90 backdrop-blur-md shadow-lg' : 'bg-transparent'}`}>
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between items-center h-16">
-              <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-gradient-to-r from-green-500 to-emerald-600 rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-lg">FB</span>
-                </div>
-                <span className="text-2xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
-                  FoodBridge
-                </span>
-              </div>
-              <div className="hidden md:flex items-center space-x-8">
-                <Link href="/foodListing" className="text-gray-700 hover:text-green-600 transition-colors">Browse Food</Link>
-                <Link href="/uploadFood" className="text-gray-700 hover:text-green-600 transition-colors">Share Food</Link>
-                <Link href="/login" className="text-gray-700 hover:text-green-600 transition-colors">Login</Link>
-                <Link href="/register" className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-4 py-2 rounded-full hover:shadow-lg transition-all duration-300 transform hover:scale-105">
-                  Get Started
-                </Link>
-              </div>
-            </div>
-          </div>
-        </nav>
-
         {/* Hero Section */}
         <section className="relative pt-16 pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden min-h-screen flex items-center">
           {/* Animated Background Elements */}
@@ -109,19 +77,19 @@ export default function Home() {
                 </div> */}
               </div>
 
-              {/* Hero Image/Animation */}
+              {/* Hero Video/Animation */}
               <div className="relative animate-fade-in-right">
                 <div className="relative w-full h-96 lg:h-[500px] rounded-3xl overflow-hidden shadow-2xl transform rotate-3 hover:rotate-0 transition-transform duration-500">
-                  <div className="absolute inset-0 bg-gradient-to-br from-green-400 to-emerald-600 opacity-90"></div>
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="text-center text-white p-8">
-                      <div className="w-24 h-24 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <div className="w-12 h-12 bg-white/30 rounded-full"></div>
-                      </div>
-                      <h3 className="text-2xl font-bold mb-2">Fresh. Local. Connected.</h3>
-                      <p className="text-lg opacity-90">Building communities one meal at a time</p>
-                    </div>
-                  </div>
+                  <video 
+                    autoPlay 
+                    loop 
+                    muted 
+                    playsInline
+                    className="absolute inset-0 w-full h-full object-cover"
+                  >
+                    <source src="/Intro.mp4" type="video/mp4" />
+                    Your browser does not support the video tag.
+                  </video>
                 </div>
               </div>
             </div>
