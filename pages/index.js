@@ -1,7 +1,6 @@
 import Image from "next/image";
 import { Geist, Geist_Mono } from "next/font/google";
 import Header from "../components/Header";
-import Hero from "../components/Hero";
 import Features from "../components/Features";
 import Footer from "../components/Footer";
 
@@ -20,9 +19,9 @@ export default function Home() {
     <div className={`${geistSans.variable} ${geistMono.variable} min-h-screen flex flex-col`}>
       <Header />
       <main className="flex-grow">
-        <Hero />
+        <Features />
         <div className="max-w-6xl mx-auto px-4 py-8">
-          <Features />
+         
         </div>
       </main>
       <Footer />

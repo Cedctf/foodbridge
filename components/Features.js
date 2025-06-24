@@ -1,49 +1,67 @@
 import Image from 'next/image';
-
+import Link from 'next/link';
+import { BentoGrid } from './ui/bento-grid';
+import { BentoCard } from './ui/bento-grid';
+import { DonationIcon, FindIcon, ReduceIcon } from './icons';
 export default function Features() {
   const features = [
     {
-      icon: '/icons/donate.svg',
-      title: 'Donate Surplus Food',
-      description: 'Businesses and individuals can easily list surplus food items for donation.'
+      Icon: DonationIcon,
+      name: "Donate Surplus Food",  
+      description: "",
+      href: "/donate",
+      cta: "Donate Now",
+      background: <div className="absolute inset-0 bg-gray-100 bg-opacity-90"></div>,
+      className: "col-span-1 lg:col-start-1 lg:col-end-3 lg:row-start-1 lg:row-end-2 h-[300px]",
     },
     {
-      icon: '/icons/find.svg',
-      title: 'Find Food Near You',
-      description: 'Recipients can quickly locate and request available food donations in their area.'
+      Icon: FindIcon,
+      name: "Find Available Food",
+      description: "",
+      href: "/find",
+      cta: "Find Food",
+      background: <div className="absolute inset-0 bg-gray-100 bg-opacity-90"></div>,
+      className: "col-span-1 lg:col-start-1 lg:col-end-2 lg:row-start-2 lg:row-end-3 h-[300px]",
     },
     {
-      icon: '/icons/reduce.svg',
-      title: 'Reduce Environmental Impact',
-      description: 'By reducing food waste, we contribute to a healthier planet and sustainable communities.'
-    }
+      Icon: ReduceIcon,
+      name: "Reduce Food Waste",
+      description: "",
+      href: "/impact",
+      cta: "Learn More",
+      background: <div className="absolute inset-0 bg-gray-100 bg-opacity-90"></div>,
+      className: "col-span-1 lg:col-start-2 lg:col-end-3 lg:row-start-2 lg:row-end-3 h-[300px]",
+    },
+    {
+      Icon: DonationIcon,
+      name: "Track Your Impact",
+      description: "",
+      href: "/impact",
+      cta: "View Impact",
+      background: (
+        <div className="absolute inset-0 bg-white bg-opacity-20">
+          <Image 
+            src="/images/plate_of_food.png" 
+            alt="Plate of food" 
+            fill 
+            style={{objectFit: 'cover', opacity: 0.8}} 
+            priority
+          />
+        </div>
+      ),
+      className: "col-span-1 md:col-span-2 lg:col-span-2 lg:col-start-3 lg:col-end-5 lg:row-start-1 lg:row-end-3 h-[600px]",
+    },
   ];
 
   return (
-    <section className="py-16 px-6">
-      <div className="max-w-6xl mx-auto">
-        <h2 className="text-3xl font-bold mb-4 text-center">How FoodBridge Works</h2>
-        <p className="text-gray-600 text-center mb-12">
-          Our platform simplifies the process of donating and receiving surplus food, ensuring it reaches those who need it most.
-        </p>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {features.map((feature, index) => (
-            <div key={index} className="border border-gray-200 rounded-lg p-6 flex flex-col items-center">
-              <div className="w-12 h-12 mb-4 flex items-center justify-center">
-                <Image 
-                  src={feature.icon} 
-                  alt={feature.title} 
-                  width={24} 
-                  height={24} 
-                />
-              </div>
-              <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
-              <p className="text-gray-600 text-center">{feature.description}</p>
-            </div>
+    <div className="relative bg-white text-black mt-20 py-4 px-0 w-screen max-w-none overflow-hidden">
+      <div className="relative z-10 w-full">
+        <BentoGrid className="lg:grid-rows-2 w-full max-w-none">
+          {features.map((feature) => (
+            <BentoCard key={feature.name} {...feature} />
           ))}
-        </div>
+        </BentoGrid>
       </div>
-    </section>
+    </div>
   );
 }
