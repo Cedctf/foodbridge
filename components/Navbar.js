@@ -18,18 +18,20 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center space-x-2">
-            <div className="w-12 h-12 rounded-lg flex items-center justify-center">
-              <Image 
-                src="/logo.png" 
-                alt="FoodBridge Logo" 
-                width={48} 
-                height={48}
-                className="object-contain"
-              />
-            </div>
-            <span className="text-2xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
-              FoodBridge
-            </span>
+            <Link href="/" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
+              <div className="w-12 h-12 rounded-lg flex items-center justify-center">
+                <Image 
+                  src="/logo.png" 
+                  alt="FoodBridge Logo" 
+                  width={48} 
+                  height={48}
+                  className="object-contain"
+                />
+              </div>
+              <span className="text-2xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+                FoodBridge
+              </span>
+            </Link>
           </div>
           <div className="hidden md:flex items-center space-x-8">
             <Link href="/foodListing" className="text-gray-700 hover:text-green-600 transition-colors">Listings</Link>
