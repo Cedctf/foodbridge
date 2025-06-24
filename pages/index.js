@@ -86,7 +86,7 @@ export default function Home() {
                       <span className="text-gray-900">& Community</span>
                     </h1>
                     <p className="text-xl text-gray-600 leading-relaxed max-w-lg">
-                      Connect with your neighbors to share fresh food, reduce waste, and build stronger communities. Every meal shared is a step towards sustainability.
+                    Share fresh food with neighbors and reduce waste together.
                     </p>
                   </div>
 
@@ -104,7 +104,7 @@ export default function Home() {
                   </div>
 
                   {/* Stats */}
-                  <div className="grid grid-cols-3 gap-8 pt-8">
+                  {/* <div className="grid grid-cols-3 gap-8 pt-8">
                     <div className="text-center">
                       <div className="text-3xl font-bold text-green-600">1000+</div>
                       <div className="text-gray-600">Meals Shared</div>
@@ -117,7 +117,7 @@ export default function Home() {
                       <div className="text-3xl font-bold text-green-600">50+</div>
                       <div className="text-gray-600">Cities Connected</div>
                     </div>
-                  </div>
+                  </div> */}
                 </div>
 
                 {/* Hero Image/Animation */}
