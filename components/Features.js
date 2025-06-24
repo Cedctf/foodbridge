@@ -11,7 +11,17 @@ export default function Features() {
       description: "",
       href: "/donate",
       cta: "Donate Now",
-      background: <div className="absolute inset-0 bg-gray-100 bg-opacity-90"></div>,
+      background: (
+        <div className="absolute inset-0 bg-white bg-opacity-20">
+          <Image 
+            src="/images/feature-card1.png" 
+            alt="Donate food"  
+            fill 
+            style={{objectFit: 'cover', opacity: 0.8}} 
+            priority
+          />
+        </div>
+      ),
       className: "col-span-1 lg:col-start-1 lg:col-end-3 lg:row-start-1 lg:row-end-2 h-[300px]",
     },
     {
@@ -20,7 +30,17 @@ export default function Features() {
       description: "",
       href: "/find",
       cta: "Find Food",
-      background: <div className="absolute inset-0 bg-gray-100 bg-opacity-90"></div>,
+      background: (
+        <div className="absolute inset-0 bg-white bg-opacity-20">
+          <Image 
+            src="/images/feature-card2.png" 
+            alt="Find food" 
+            fill 
+            style={{objectFit: 'cover', opacity: 0.8}} 
+            priority
+          />
+        </div>
+      ),
       className: "col-span-1 lg:col-start-1 lg:col-end-2 lg:row-start-2 lg:row-end-3 h-[300px]",
     },
     {
@@ -29,7 +49,17 @@ export default function Features() {
       description: "",
       href: "/impact",
       cta: "Learn More",
-      background: <div className="absolute inset-0 bg-gray-100 bg-opacity-90"></div>,
+      background: (
+        <div className="absolute inset-0 bg-white bg-opacity-20">
+          <Image 
+            src="/images/feature-card3.png" 
+            alt="Reduce waste" 
+            fill 
+            style={{objectFit: 'cover', opacity: 0.8}} 
+            priority
+          />
+        </div>
+      ),
       className: "col-span-1 lg:col-start-2 lg:col-end-3 lg:row-start-2 lg:row-end-3 h-[300px]",
     },
     {
@@ -55,6 +85,9 @@ export default function Features() {
 
   return (
     <div className="relative bg-white text-black mt-20 py-4 px-0 w-screen max-w-none overflow-hidden">
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-1 mr-200">
+        <h3 className="text-3xl font-bold text-gray-900 mb-6 bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 bg-clip-text text-transparent inline-block">Features</h3>
+      </div>
       <div className="relative z-10 w-full">
         <BentoGrid className="lg:grid-rows-2 w-full max-w-none">
           {features.map((feature) => (
