@@ -44,7 +44,7 @@ export default function Home() {
               <div className="flex justify-between items-center h-16">
                 <div className="flex items-center space-x-2">
                   <div className="w-8 h-8 bg-gradient-to-r from-green-500 to-emerald-600 rounded-lg flex items-center justify-center">
-                    <span className="text-white font-bold text-lg">🍎</span>
+                    <span className="text-white font-bold text-lg">FB</span>
                   </div>
                   <span className="text-2xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
                     FoodBridge
@@ -54,7 +54,7 @@ export default function Home() {
                   <Link href="/foodListing" className="text-gray-700 hover:text-green-600 transition-colors">Browse Food</Link>
                   <Link href="/uploadFood" className="text-gray-700 hover:text-green-600 transition-colors">Share Food</Link>
                   <Link href="/login" className="text-gray-700 hover:text-green-600 transition-colors">Login</Link>
-                  <Link href="/register" className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-6 py-2 rounded-full hover:shadow-lg transition-all duration-300 transform hover:scale-105">
+                  <Link href="/register" className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-4 py-2 rounded-full hover:shadow-lg transition-all duration-300 transform hover:scale-105">
                     Get Started
                   </Link>
                 </div>
@@ -92,13 +92,13 @@ export default function Home() {
 
                   {/* CTA Buttons */}
                   <div className="flex flex-col sm:flex-row gap-4">
-                    <Link href="/foodListing" className="group bg-gradient-to-r from-green-500 to-emerald-600 text-white px-8 py-4 rounded-full text-lg font-semibold hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex items-center justify-center">
+                    <Link href="/foodListing" className="group bg-gradient-to-r from-green-500 to-emerald-600 text-white px-6 py-3 rounded-full text-base font-semibold hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex items-center justify-center">
                       Explore Available Food
-                      <svg className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                       </svg>
                     </Link>
-                    <Link href="/uploadFood" className="bg-white text-green-600 border-2 border-green-500 px-8 py-4 rounded-full text-lg font-semibold hover:bg-green-50 transition-all duration-300 transform hover:scale-105 flex items-center justify-center">
+                    <Link href="/uploadFood" className="bg-white text-green-600 border-2 border-green-500 px-6 py-3 rounded-full text-base font-semibold hover:bg-green-50 transition-all duration-300 transform hover:scale-105 flex items-center justify-center">
                       Share Your Food
                     </Link>
                   </div>
@@ -126,18 +126,13 @@ export default function Home() {
                     <div className="absolute inset-0 bg-gradient-to-br from-green-400 to-emerald-600 opacity-90"></div>
                     <div className="absolute inset-0 flex items-center justify-center">
                       <div className="text-center text-white p-8">
-                        <div className="text-8xl mb-4">🥘</div>
+                        <div className="w-24 h-24 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                          <div className="w-12 h-12 bg-white/30 rounded-full"></div>
+                        </div>
                         <h3 className="text-2xl font-bold mb-2">Fresh. Local. Connected.</h3>
                         <p className="text-lg opacity-90">Building communities one meal at a time</p>
                       </div>
                     </div>
-                  </div>
-                  {/* Floating Elements */}
-                  <div className="absolute -top-6 -right-6 w-16 h-16 bg-yellow-400 rounded-full flex items-center justify-center text-2xl animate-bounce delay-1000">
-                    🌟
-                  </div>
-                  <div className="absolute -bottom-4 -left-4 w-12 h-12 bg-red-400 rounded-full flex items-center justify-center text-xl animate-bounce delay-500">
-                    ❤️
                   </div>
                 </div>
               </div>
