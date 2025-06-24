@@ -49,9 +49,6 @@ export default function Home() {
                 <div className="flex flex-col sm:flex-row gap-4">
                   <Link href="/foodListing" className="group bg-gradient-to-r from-green-500 to-emerald-600 text-white px-6 py-3 rounded-full text-base font-semibold hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex items-center justify-center">
                     Explore Available Food
-                    <svg className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                    </svg>
                   </Link>
                   <Link href="/uploadFood" className="bg-white text-green-600 border-2 border-green-500 px-6 py-3 rounded-full text-base font-semibold hover:bg-green-50 transition-all duration-300 transform hover:scale-105 flex items-center justify-center">
                     Share Your Food
