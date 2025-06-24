@@ -1,8 +1,7 @@
-import Image from "next/image";
 import { Geist, Geist_Mono } from "next/font/google";
-import Header from "../components/Header";
-import Features from "../components/Features";
-import Footer from "../components/Footer";
+import Navigation from "../components/Navigation";
+import Hero from "../components/Hero";
+import Features from "@/components/Features";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -16,15 +15,44 @@ const geistMono = Geist_Mono({
 
 export default function Home() {
   return (
-    <div className={`${geistSans.variable} ${geistMono.variable} min-h-screen flex flex-col`}>
-      <Header />
-      <main className="flex-grow">
+    <>
+      <div className={`${geistSans.className} min-h-screen bg-gradient-to-br from-green-50 via-white to-emerald-50`}>
+        <Navigation />
+        <Hero />
         <Features />
-        <div className="max-w-6xl mx-auto px-4 py-8">
-         
-        </div>
-      </main>
-      <Footer />
-    </div>
+      </div>
+
+      <style jsx>{`
+        @keyframes fade-in-up {
+          from {
+            opacity: 0;
+            transform: translateY(30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        @keyframes fade-in-right {
+          from {
+            opacity: 0;
+            transform: translateX(30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+
+        .animate-fade-in-up {
+          animation: fade-in-up 1s ease-out;
+        }
+
+        .animate-fade-in-right {
+          animation: fade-in-right 1s ease-out 0.3s both;
+        }
+      `}</style>
+    </>
   );
 }
