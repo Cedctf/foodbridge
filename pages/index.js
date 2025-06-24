@@ -1,5 +1,12 @@
 import Image from "next/image";
 import { Geist, Geist_Mono } from "next/font/google";
+import dynamic from 'next/dynamic';
+
+// Import the map component with dynamic loading to avoid SSR issues
+const GoogleMapComponent = dynamic(
+  () => import('../components/GoogleMap'),
+  { ssr: false }
+);
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -16,7 +23,7 @@ export default function Home() {
     <div
       className={`${geistSans.className} ${geistMono.className} grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]`}
     >
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
+      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start w-full max-w-4xl">
         <Image
           className="dark:invert"
           src="/next.svg"
@@ -25,6 +32,14 @@ export default function Home() {
           height={38}
           priority
         />
+        
+        <h1 className="text-2xl font-bold">FoodBridge with Google Maps</h1>
+        
+        {/* Google Map Component */}
+        <div className="w-full rounded-lg overflow-hidden shadow-lg">
+          <GoogleMapComponent />
+        </div>
+        
         <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
           <li className="mb-2 tracking-[-.01em]">
             Get started by editing{" "}
