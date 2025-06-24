@@ -41,4 +41,9 @@ export async function getUsersCollection() {
   return db.collection('users');
 }
 
+export async function getFoodCollection() {
+  const { db } = await connectToDatabase();
+  return db.collection('foods');
+}
+
 export default clientPromise;
