@@ -1,12 +1,209 @@
 import dynamic from 'next/dynamic';
 import { useState, useEffect } from 'react';
 import SmallFoodCard from '../components/SmallFoodCard';
+import LocationPin from '../components/LocationPin';
+import { GoogleMap, LoadScript, Marker, InfoWindow } from '@react-google-maps/api';
 
 // Import the map component with dynamic loading to avoid SSR issues
 const GoogleMapComponent = dynamic(
   () => import('../components/GoogleMap'),
   { ssr: false }
 );
+
+// Custom Map Component that includes food markers with LocationPin
+const FoodMapComponent = ({ foods, activeMapLocation, onLocationChange }) => {
+  const [selectedFood, setSelectedFood] = useState(null);
+  const [mapLoaded, setMapLoaded] = useState(false);
+  
+  // Calculate days until expiry (copied from LocationPin for consistency)
+  const getDaysUntilExpiry = (expiryDate) => {
+    const today = new Date();
+    const expiry = new Date(expiryDate);
+    const diffTime = expiry - today;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays;
+  };
+
+  // Get expiry text (copied from LocationPin for consistency)
+  const getExpiryText = (expiryDate) => {
+    const daysLeft = getDaysUntilExpiry(expiryDate);
+    if (daysLeft < 0) return 'Expired';
+    if (daysLeft === 0) return 'Expires today';
+    if (daysLeft === 1) return '1 day left';
+    return `${daysLeft} days left`;
+  };
+  
+  // Handle food marker click
+  const handleFoodMarkerClick = (food) => {
+    setSelectedFood(food);
+  };
+  
+  return (
+    <div>
+      {/* Use the original GoogleMapComponent for the base map functionality */}
+      <GoogleMapComponent 
+        onLocationChange={onLocationChange} 
+        onLoad={() => setMapLoaded(true)}
+      />
+      
+      {/* Add a separate LoadScript for food markers with LocationPin */}
+      {mapLoaded && foods && foods.length > 0 && (
+        <LoadScript googleMapsApiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}>
+          <GoogleMap
+            mapContainerStyle={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '500px',
+              pointerEvents: 'none' // This makes the overlay non-interactive
+            }}
+            center={activeMapLocation}
+            zoom={14}
+            options={{
+              disableDefaultUI: true,
+              zoomControl: false,
+              mapTypeControl: false,
+              scaleControl: false,
+              streetViewControl: false,
+              rotateControl: false,
+              fullscreenControl: false
+            }}
+          >
+            {foods.map((food) => (
+              <Marker
+                key={food._id}
+                position={{ lat: food.lat, lng: food.lng }}
+                onClick={() => handleFoodMarkerClick(food)}
+                icon={{
+                  url: `data:image/svg+xml;base64,${btoa(`
+                    <svg xmlns="http://www.w3.org/2000/svg" width="1" height="1">
+                      <rect width="1" height="1" fill="transparent" />
+                    </svg>
+                  `)}`,
+                  scaledSize: { width: 1, height: 1 }
+                }}
+              >
+                <div style={{ position: 'relative' }}>
+                  <LocationPin food={food} onClick={() => handleFoodMarkerClick(food)} />
+                </div>
+              </Marker>
+            ))}
+            
+            {selectedFood && (
+              <InfoWindow
+                position={{ lat: selectedFood.lat, lng: selectedFood.lng }}
+                onCloseClick={() => setSelectedFood(null)}
+              >
+                <div style={{
+                  maxWidth: '280px',
+                  padding: '12px',
+                  fontFamily: 'Arial, sans-serif'
+                }}>
+                  <div style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'flex-start',
+                    marginBottom: '8px'
+                  }}>
+                    <h3 style={{
+                      margin: 0,
+                      fontSize: '16px',
+                      fontWeight: 'bold',
+                      color: '#333'
+                    }}>{selectedFood.name}</h3>
+                    <button
+                      onClick={() => setSelectedFood(null)}
+                      style={{
+                        background: 'none',
+                        border: 'none',
+                        fontSize: '18px',
+                        cursor: 'pointer',
+                        color: '#666',
+                        padding: '0',
+                        marginLeft: '8px'
+                      }}
+                    >×</button>
+                  </div>
+                  
+                  <div style={{
+                    fontSize: '12px',
+                    color: '#666',
+                    marginBottom: '8px'
+                  }}>
+                    📍 {selectedFood.address}
+                  </div>
+                  
+                  <div style={{
+                    fontSize: '14px',
+                    color: '#555',
+                    marginBottom: '8px',
+                    lineHeight: '1.4'
+                  }}>
+                    {selectedFood.description}
+                  </div>
+                  
+                  <div style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    marginBottom: '8px'
+                  }}>
+                    <span style={{
+                      fontSize: '14px',
+                      fontWeight: 'bold',
+                      color: '#2E7D32'
+                    }}>{selectedFood.foodType} • Qty: {selectedFood.quantity}</span>
+                    
+                    <div style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '4px'
+                    }}>
+                      <span style={{ color: '#FF6B6B' }}>⏱</span>
+                      <span style={{ fontSize: '14px', color: '#555' }}>{getExpiryText(selectedFood.expiryDate)}</span>
+                    </div>
+                  </div>
+                  
+                  <div style={{
+                    display: 'flex',
+                    gap: '8px',
+                    marginTop: '12px'
+                  }}>
+                    <button style={{
+                      flex: 1,
+                      padding: '8px 12px',
+                      backgroundColor: '#4CAF50',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '4px',
+                      fontSize: '12px',
+                      cursor: 'pointer'
+                    }}>
+                      Contact
+                    </button>
+                    
+                    <button style={{
+                      padding: '8px 12px',
+                      backgroundColor: 'transparent',
+                      color: '#4CAF50',
+                      border: '1px solid #4CAF50',
+                      borderRadius: '4px',
+                      fontSize: '12px',
+                      cursor: 'pointer'
+                    }}>
+                      View Details
+                    </button>
+                  </div>
+                </div>
+              </InfoWindow>
+            )}
+          </GoogleMap>
+        </LoadScript>
+      )}
+    </div>
+  );
+};
 
 export default function MapPage() {
   const [sortBy, setSortBy] = useState('distance'); // Default to distance
@@ -134,7 +331,7 @@ export default function MapPage() {
   const formatDistance = (distance) => {
     if (distance === null) return 'Unknown distance';
     if (distance < 1) return `${Math.round(distance * 1000)} m away`;
-    return `${distance.toFixed(1)} miles away`;
+    return `${distance.toFixed(1)} km away`;
   };
 
   return (
@@ -148,9 +345,10 @@ export default function MapPage() {
           </div>
           
           {/* Map Container with integrated search */}
-          <div style={{ backgroundColor: 'none' }}>
-            <GoogleMapComponent 
-              sortBy={sortBy} 
+          <div style={{ backgroundColor: 'none', position: 'relative' }}>
+            <FoodMapComponent 
+              foods={getSortedFoods()} 
+              activeMapLocation={activeMapLocation}
               onLocationChange={handleMapLocationChange} 
             />
           </div>
