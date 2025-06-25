@@ -46,4 +46,54 @@ export async function getFoodCollection() {
   return db.collection('foods');
 }
 
+export async function getDonationsCollection() {
+  const { db } = await connectToDatabase();
+  return db.collection('donations');
+}
+
+export async function getImpactCollection() {
+  const { db } = await connectToDatabase();
+  return db.collection('impact');
+}
+
+// Seed example data for development/testing
+export async function seedDatabase() {
+  const { db } = await connectToDatabase();
+
+  // Clear existing data (optional)
+  await db.collection('impact').deleteMany({});
+  await db.collection('donations').deleteMany({});
+
+  // Seed impact collection
+  await db.collection('impact').insertOne({
+    mealsProvided: 1234,
+    foodSavedLbs: 5678,
+    recipientsHelped: 321
+  });
+
+  // Seed donations collection
+  await db.collection('donations').insertMany([
+    {
+      item: "Fresh Produce",
+      quantity: "50 lbs",
+      status: "Available",
+      timestamp: new Date()
+    },
+    {
+      item: "Canned Goods",
+      quantity: "100 cans",
+      status: "Claimed",
+      timestamp: new Date()
+    },
+    {
+      item: "Bakery Items",
+      quantity: "20 loaves",
+      status: "Expired",
+      timestamp: new Date()
+    }
+  ]);
+
+  console.log("✅ Database seeded successfully.");
+}
+
 export default clientPromise;
