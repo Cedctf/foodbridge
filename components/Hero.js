@@ -61,19 +61,19 @@ export default function Hero() {
 
           {/* Hero Image/Animation */}
           <div className="relative animate-fade-in-right">
-            <div className="relative w-full h-96 lg:h-[500px] rounded-3xl overflow-hidden shadow-2xl transform rotate-3 hover:rotate-0 transition-transform duration-500">
-              <div className="absolute inset-0 bg-gradient-to-br from-green-400 to-emerald-600 opacity-90"></div>
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="text-center text-white p-8">
-                  <div className="w-24 h-24 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <div className="w-12 h-12 bg-white/30 rounded-full"></div>
-                  </div>
-                  <h3 className="text-2xl font-bold mb-2">Fresh. Local. Connected.</h3>
-                  <p className="text-lg opacity-90">Building communities one meal at a time</p>
+                <div className="relative w-full h-96 lg:h-[500px] rounded-3xl overflow-hidden shadow-2xl transform rotate-3 hover:rotate-0 transition-transform duration-500">
+                  <video 
+                    autoPlay 
+                    loop 
+                    muted 
+                    playsInline
+                    className="absolute inset-0 w-full h-full object-cover"
+                  >
+                    <source src="/Intro.mp4" type="video/mp4" />
+                    Your browser does not support the video tag.
+                  </video>
                 </div>
               </div>
-            </div>
-          </div>
         </div>
       </div>
 
