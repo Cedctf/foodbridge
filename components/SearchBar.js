@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Autocomplete } from '@react-google-maps/api';
 
 const SearchBar = ({ onPlaceSelect, autocompleteRef }) => {

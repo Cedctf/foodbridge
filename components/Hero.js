@@ -2,14 +2,7 @@ import Link from "next/link";
 
 export default function Hero() {
   return (
-    <section className="relative pt-16 pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden min-h-screen flex items-center">
-      {/* Animated Background Elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-4 -right-4 w-72 h-72 bg-green-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-pulse"></div>
-        <div className="absolute -bottom-8 -left-4 w-72 h-72 bg-emerald-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-pulse delay-1000"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-yellow-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse delay-500"></div>
-      </div>
-
+    <section className="relative pt-16 pb-20 px-4 sm:px-6 lg:px-8 min-h-screen flex items-center">
       <div className="relative max-w-7xl mx-auto w-full">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* Hero Content */}
