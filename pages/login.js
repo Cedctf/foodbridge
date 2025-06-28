@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useRouter } from 'next/router';
+import { useUser } from '../contexts/UserContext';
 
 export default function Login() {
   const [form, setForm] = useState({
@@ -10,6 +11,7 @@ export default function Login() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const router = useRouter();
+  const { login } = useUser();
 
   const handleChange = (e) => {
     setForm({
@@ -27,28 +29,17 @@ export default function Login() {
     setSuccess('');
 
     try {
-      const response = await fetch('/api/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(form),
-      });
+      const result = await login(form);
 
-      const data = await response.json();
-
-      if (response.ok) {
-        setSuccess(`Welcome back, ${data.user.username}!`);
-        
-        // Store user info in localStorage (you might want to use a more secure method)
-        localStorage.setItem('user', JSON.stringify(data.user));
+      if (result.success) {
+        setSuccess(`Welcome back, ${result.user.username}!`);
         
         // Redirect after 1.5 seconds
         setTimeout(() => {
-          router.push('/dashboard'); // Change this to your desired redirect page
+          router.push('/profile'); // Redirect to profile page
         }, 1500);
       } else {
-        setError(data.error || 'Login failed');
+        setError(result.error || 'Login failed');
       }
     } catch (err) {
       setError('Network error. Please check your connection and try again.');
@@ -64,16 +55,17 @@ export default function Login() {
       padding: 24, 
       border: '1px solid #eee', 
       borderRadius: 8,
-      boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+      boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+      backgroundColor: '#ffffff'
     }}>
-      <h2 style={{ textAlign: 'center', color: '#333', marginBottom: 8 }}>Welcome Back</h2>
-      <p style={{ textAlign: 'center', color: '#666', marginBottom: 24, fontSize: 14 }}>
+      <h2 style={{ textAlign: 'center', color: '#000000', marginBottom: 8 }}>Welcome Back</h2>
+      <p style={{ textAlign: 'center', color: '#000000', marginBottom: 24, fontSize: 14 }}>
         Sign in to your Food Bridge account
       </p>
       
       <form onSubmit={handleSubmit}>
         <div style={{ marginBottom: 16 }}>
-          <label htmlFor="identifier" style={{ display: 'block', marginBottom: 4, fontWeight: 'bold' }}>
+          <label htmlFor="identifier" style={{ display: 'block', marginBottom: 4, fontWeight: 'bold', color: '#000000' }}>
             Username or Email
           </label>
           <input
@@ -90,13 +82,14 @@ export default function Login() {
               padding: 8, 
               border: '1px solid #ddd',
               borderRadius: 4,
-              fontSize: 14
+              fontSize: 14,
+              color: '#000000'
             }}
           />
         </div>
         
         <div style={{ marginBottom: 20 }}>
-          <label htmlFor="password" style={{ display: 'block', marginBottom: 4, fontWeight: 'bold' }}>
+          <label htmlFor="password" style={{ display: 'block', marginBottom: 4, fontWeight: 'bold', color: '#000000' }}>
             Password
           </label>
           <input
@@ -113,7 +106,8 @@ export default function Login() {
               padding: 8, 
               border: '1px solid #ddd',
               borderRadius: 4,
-              fontSize: 14
+              fontSize: 14,
+              color: '#000000'
             }}
           />
         </div>
@@ -167,7 +161,7 @@ export default function Login() {
       </form>
       
       <div style={{ textAlign: 'center', marginTop: 20 }}>
-        <p style={{ fontSize: 14, color: '#666' }}>
+        <p style={{ fontSize: 14, color: '#000000' }}>
           Don't have an account?{' '}
           <a href="/register" style={{ color: '#4caf50', textDecoration: 'none', fontWeight: 'bold' }}>
             Create one here
