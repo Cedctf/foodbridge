@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useRouter } from 'next/router';
+import { useUser } from '../contexts/UserContext';
 
 export default function Login() {
   const [form, setForm] = useState({
@@ -10,6 +11,7 @@ export default function Login() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const router = useRouter();
+  const { login } = useUser();
 
   const handleChange = (e) => {
     setForm({
@@ -27,28 +29,17 @@ export default function Login() {
     setSuccess('');
 
     try {
-      const response = await fetch('/api/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(form),
-      });
+      const result = await login(form);
 
-      const data = await response.json();
-
-      if (response.ok) {
-        setSuccess(`Welcome back, ${data.user.username}!`);
-        
-        // Store user info in localStorage (you might want to use a more secure method)
-        localStorage.setItem('user', JSON.stringify(data.user));
+      if (result.success) {
+        setSuccess(`Welcome back, ${result.user.username}!`);
         
         // Redirect after 1.5 seconds
         setTimeout(() => {
-          router.push('/dashboard'); // Change this to your desired redirect page
+          router.push('/'); // Redirect to home page
         }, 1500);
       } else {
-        setError(data.error || 'Login failed');
+        setError(result.error || 'Login failed');
       }
     } catch (err) {
       setError('Network error. Please check your connection and try again.');

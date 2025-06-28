@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useUser } from "../contexts/UserContext";
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
+  const { user, isAuthenticated, logout } = useUser();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -37,9 +39,26 @@ export default function Navbar() {
             <Link href="/foodListing" className="text-gray-700 hover:text-green-600 transition-colors">Listings</Link>
             <Link href="/uploadFood" className="text-gray-700 hover:text-green-600 transition-colors">Donate</Link>
             <Link href="/blog" className="text-gray-700 hover:text-green-600 transition-colors">Blog</Link>
-            <Link href="/profile" className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-4 py-2 rounded-full hover:shadow-lg transition-all duration-300 transform hover:scale-105">
-              Profile
-            </Link>
+            
+            {isAuthenticated ? (
+              <div className="flex items-center space-x-4">
+                <span className="text-gray-700">Welcome, {user?.username}!</span>
+                <Link href="/profile" className="text-gray-700 hover:text-green-600 transition-colors">Profile</Link>
+                <button 
+                  onClick={logout}
+                  className="bg-red-500 text-white px-4 py-2 rounded-full hover:bg-red-600 transition-all duration-300"
+                >
+                  Logout
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center space-x-4">
+                <Link href="/login" className="text-gray-700 hover:text-green-600 transition-colors">Login</Link>
+                <Link href="/register" className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-4 py-2 rounded-full hover:shadow-lg transition-all duration-300 transform hover:scale-105">
+                  Sign Up
+                </Link>
+              </div>
+            )}
           </div>
         </div>
       </div>
