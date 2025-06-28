@@ -38,7 +38,7 @@ const upload = multer({
 });
 
 // Disable Next.js default body parser for this route to handle multipart data
-export const config = {
+export const config = { 
   api: {
     bodyParser: false,
   },

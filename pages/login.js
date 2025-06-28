@@ -55,16 +55,17 @@ export default function Login() {
       padding: 24, 
       border: '1px solid #eee', 
       borderRadius: 8,
-      boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+      boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+      backgroundColor: '#ffffff'
     }}>
-      <h2 style={{ textAlign: 'center', color: '#333', marginBottom: 8 }}>Welcome Back</h2>
-      <p style={{ textAlign: 'center', color: '#666', marginBottom: 24, fontSize: 14 }}>
+      <h2 style={{ textAlign: 'center', color: '#000000', marginBottom: 8 }}>Welcome Back</h2>
+      <p style={{ textAlign: 'center', color: '#000000', marginBottom: 24, fontSize: 14 }}>
         Sign in to your Food Bridge account
       </p>
       
       <form onSubmit={handleSubmit}>
         <div style={{ marginBottom: 16 }}>
-          <label htmlFor="identifier" style={{ display: 'block', marginBottom: 4, fontWeight: 'bold' }}>
+          <label htmlFor="identifier" style={{ display: 'block', marginBottom: 4, fontWeight: 'bold', color: '#000000' }}>
             Username or Email
           </label>
           <input
@@ -81,13 +82,14 @@ export default function Login() {
               padding: 8, 
               border: '1px solid #ddd',
               borderRadius: 4,
-              fontSize: 14
+              fontSize: 14,
+              color: '#000000'
             }}
           />
         </div>
         
         <div style={{ marginBottom: 20 }}>
-          <label htmlFor="password" style={{ display: 'block', marginBottom: 4, fontWeight: 'bold' }}>
+          <label htmlFor="password" style={{ display: 'block', marginBottom: 4, fontWeight: 'bold', color: '#000000' }}>
             Password
           </label>
           <input
@@ -104,7 +106,8 @@ export default function Login() {
               padding: 8, 
               border: '1px solid #ddd',
               borderRadius: 4,
-              fontSize: 14
+              fontSize: 14,
+              color: '#000000'
             }}
           />
         </div>
@@ -158,7 +161,7 @@ export default function Login() {
       </form>
       
       <div style={{ textAlign: 'center', marginTop: 20 }}>
-        <p style={{ fontSize: 14, color: '#666' }}>
+        <p style={{ fontSize: 14, color: '#000000' }}>
           Don't have an account?{' '}
           <a href="/register" style={{ color: '#4caf50', textDecoration: 'none', fontWeight: 'bold' }}>
             Create one here

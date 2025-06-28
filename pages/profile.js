@@ -1,11 +1,40 @@
 import { useProtectedRoute } from '../hooks/useAuth';
 import { useUser } from '../contexts/UserContext';
 import Head from 'next/head';
+import { useState, useEffect } from 'react';
 
 export default function Profile() {
   // This will automatically redirect to login if user is not authenticated
   const { user, isReady } = useProtectedRoute();
-  const { updateUser, logout } = useUser();
+  const { updateUser, logout, fetchUserImpact } = useUser();
+  const [impact, setImpact] = useState(null);
+  const [impactLoading, setImpactLoading] = useState(true);
+  const [impactError, setImpactError] = useState('');
+
+  // Fetch impact data when user is loaded
+  useEffect(() => {
+    async function loadImpactData() {
+      if (user && user.id) {
+        setImpactLoading(true);
+        try {
+          const result = await fetchUserImpact();
+          if (result.success) {
+            setImpact(result.impact);
+            setImpactError('');
+          } else {
+            setImpactError(result.error || 'Failed to load impact data');
+          }
+        } catch (error) {
+          console.error('Error loading impact data:', error);
+          setImpactError('An unexpected error occurred');
+        } finally {
+          setImpactLoading(false);
+        }
+      }
+    }
+    
+    loadImpactData();
+  }, [user, fetchUserImpact]);
 
   // Show loading while checking authentication
   if (!isReady) {
@@ -59,6 +88,34 @@ export default function Profile() {
                     </p>
                   </div>
                 </div>
+              </div>
+
+              {/* Impact Data */}
+              <div className="border-b border-gray-200 pb-6">
+                <h2 className="text-lg font-medium text-gray-900 mb-4">Your Impact</h2>
+                
+                {impactLoading ? (
+                  <p className="text-sm text-gray-500">Loading impact data...</p>
+                ) : impactError ? (
+                  <p className="text-sm text-red-500">{impactError}</p>
+                ) : impact ? (
+                  <div className="grid grid-cols-3 gap-4 text-center">
+                    <div className="bg-green-50 p-4 rounded-lg">
+                      <p className="text-2xl font-bold text-green-600">{impact.mealsProvided.toLocaleString()}</p>
+                      <p className="text-xs text-gray-500 mt-1">Meals Provided</p>
+                    </div>
+                    <div className="bg-blue-50 p-4 rounded-lg">
+                      <p className="text-2xl font-bold text-blue-600">{impact.foodSavedLbs.toLocaleString()}</p>
+                      <p className="text-xs text-gray-500 mt-1">Food Saved (lbs)</p>
+                    </div>
+                    <div className="bg-purple-50 p-4 rounded-lg">
+                      <p className="text-2xl font-bold text-purple-600">{impact.recipientsHelped.toLocaleString()}</p>
+                      <p className="text-xs text-gray-500 mt-1">Recipients Helped</p>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-sm text-gray-500">No impact data available</p>
+                )}
               </div>
 
               {/* Actions */}

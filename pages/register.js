@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useRouter } from 'next/router';
+import Image from 'next/image';
 import { useUser } from '../contexts/UserContext';
 
 export default function Register() {
@@ -72,22 +73,56 @@ export default function Register() {
   };
 
   return (
-    <div style={{ 
-      maxWidth: 400, 
-      margin: '2rem auto', 
-      padding: 24, 
-      border: '1px solid #eee', 
-      borderRadius: 8,
-      boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+    <div style={{
+      display: 'flex',
+      justifyContent: 'center',
+      margin: '2rem auto',
+      maxWidth: '800px',
+      padding: '0 24px'
     }}>
-      <h2 style={{ textAlign: 'center', color: '#333', marginBottom: 8 }}>Join Food Bridge</h2>
-      <p style={{ textAlign: 'center', color: '#666', marginBottom: 24, fontSize: 14 }}>
+      {/* Left Box */}
+      <div style={{ 
+        flex: 1,
+        maxWidth: 400,
+        position: 'relative',
+        borderTop: '1px solid #eee',
+        borderBottom: '1px solid #eee',
+        borderLeft: '1px solid #eee',
+        borderTopLeftRadius: 8,
+        borderBottomLeftRadius: 8,
+        boxShadow: '-2px 2px 4px rgba(0,0,0,0.1)',
+        overflow: 'hidden'
+      }}>
+        <Image
+          src="/images/register-leftbox.png"
+          alt="Food Bridge Registration"
+          fill
+          style={{ objectFit: 'cover' }}
+          priority
+        />
+      </div>
+
+      {/* Right Box (Register Form) */}
+      <div style={{ 
+        flex: 1,
+        maxWidth: 400,
+        padding: 24, 
+        borderTop: '1px solid #eee',
+        borderBottom: '1px solid #eee',
+        borderRight: '1px solid #eee',
+        borderTopRightRadius: 8,
+        borderBottomRightRadius: 8,
+        boxShadow: '2px 2px 4px rgba(0,0,0,0.1)',
+        backgroundColor: '#fff'
+      }}>
+      <h2 style={{ textAlign: 'center', color: '#000000', marginBottom: 8 }}>Join Food Bridge</h2>
+      <p style={{ textAlign: 'center', color: '#000000', marginBottom: 24, fontSize: 14 }}>
         Help reduce food waste and support communities in Malaysia
       </p>
       
       <form onSubmit={handleSubmit}>
         <div style={{ marginBottom: 16 }}>
-          <label htmlFor="username" style={{ display: 'block', marginBottom: 4, fontWeight: 'bold' }}>
+          <label htmlFor="username" style={{ display: 'block', marginBottom: 4, fontWeight: 'bold', color: '#000000' }}>
             Username
           </label>
           <input
@@ -103,13 +138,14 @@ export default function Register() {
               padding: 8, 
               border: '1px solid #ddd',
               borderRadius: 4,
-              fontSize: 14
+              fontSize: 14,
+              color: '#000000'
             }}
           />
         </div>
         
         <div style={{ marginBottom: 16 }}>
-          <label htmlFor="email" style={{ display: 'block', marginBottom: 4, fontWeight: 'bold' }}>
+          <label htmlFor="email" style={{ display: 'block', marginBottom: 4, fontWeight: 'bold', color: '#000000' }}>
             Email
           </label>
           <input
@@ -125,13 +161,14 @@ export default function Register() {
               padding: 8, 
               border: '1px solid #ddd',
               borderRadius: 4,
-              fontSize: 14
+              fontSize: 14,
+              color: '#000000'
             }}
           />
         </div>
         
         <div style={{ marginBottom: 20 }}>
-          <label htmlFor="password" style={{ display: 'block', marginBottom: 4, fontWeight: 'bold' }}>
+          <label htmlFor="password" style={{ display: 'block', marginBottom: 4, fontWeight: 'bold', color: '#000000' }}>
             Password (minimum 6 characters)
           </label>
           <input
@@ -148,7 +185,8 @@ export default function Register() {
               padding: 8, 
               border: '1px solid #ddd',
               borderRadius: 4,
-              fontSize: 14
+              fontSize: 14,
+              color: '#000000'
             }}
           />
         </div>
@@ -207,6 +245,7 @@ export default function Register() {
           Sign in here
         </a>
       </p>
+      </div>
     </div>
   );
 }

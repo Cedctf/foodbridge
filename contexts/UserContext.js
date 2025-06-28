@@ -106,6 +106,27 @@ export const UserProvider = ({ children }) => {
     return user ? user[field] : null;
   };
 
+  // Fetch user impact data
+  const fetchUserImpact = async () => {
+    if (!user || !user.id) {
+      return { success: false, error: 'User not authenticated' };
+    }
+
+    try {
+      const response = await fetch(`/api/impact?userId=${user.id}`);
+      const data = await response.json();
+
+      if (response.ok) {
+        return { success: true, impact: data };
+      } else {
+        return { success: false, error: data.error };
+      }
+    } catch (error) {
+      console.error('Error fetching impact data:', error);
+      return { success: false, error: 'Network error. Please try again.' };
+    }
+  };
+
   const value = {
     user,
     loading,
@@ -116,6 +137,7 @@ export const UserProvider = ({ children }) => {
     checkAuth,
     getUserData,
     getUserField,
+    fetchUserImpact,
   };
 
   return (

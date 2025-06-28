@@ -1,8 +1,6 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import Navigation from "../components/Navigation";
 import Hero from "../components/Hero";
-import Features from "@/components/Features";
-import Link from "next/link";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -18,11 +16,9 @@ export default function Home() {
   return (
     <>
       <div className={`${geistSans.className} min-h-screen bg-gradient-to-br from-green-50 via-white to-emerald-50`}>
-        {/* <Navigation /> */}
+        <Navigation />
         <Hero />
-        <Features />
       </div>
-      
 
       <style jsx>{`
         @keyframes fade-in-up {
