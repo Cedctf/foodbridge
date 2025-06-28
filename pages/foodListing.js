@@ -125,7 +125,7 @@ export default function FoodListing() {
         </div>
 
         {/* Filters and Sort */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 text-gray-700">
           <div className="max-w-3xl mx-auto mb-8">
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -155,7 +155,7 @@ export default function FoodListing() {
                 </button>
               </div>
 
-              <div className="flex-1">
+              <div className="flex-1 text-gray-700">
                 <select
                   value={foodTypeFilter}
                   onChange={(e) => setFoodTypeFilter(e.target.value)}
@@ -175,7 +175,7 @@ export default function FoodListing() {
                 </select>
               </div>
 
-              <div className="flex-1">
+              <div className="flex-1 text-gray-700">
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
