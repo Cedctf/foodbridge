@@ -36,7 +36,7 @@ export default function Login() {
         
         // Redirect after 1.5 seconds
         setTimeout(() => {
-          router.push('/'); // Redirect to home page
+          router.push('/profile'); // Redirect to profile page
         }, 1500);
       } else {
         setError(result.error || 'Login failed');
