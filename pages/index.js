@@ -1,5 +1,5 @@
 import { Geist, Geist_Mono } from "next/font/google";
-import Navigation from "../components/Navigation";
+import Navbar from "../components/Navbar";
 import Hero from "../components/Hero";
 import Features from "@/components/Features";
 import Link from "next/link";
@@ -18,7 +18,7 @@ export default function Home() {
   return (
     <>
       <div className={`${geistSans.className} min-h-screen bg-gradient-to-br from-green-50 via-white to-emerald-50`}>
-        {/* <Navigation /> */}
+        <Navbar />
         <Hero />
         <Features />
       </div>

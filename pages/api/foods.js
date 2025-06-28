@@ -1,4 +1,5 @@
 import { getFoodCollection } from './database';
+import { getImpactCollection } from './database';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
@@ -63,7 +64,7 @@ export default async function handler(req, res) {
       await runMiddleware(req, res, upload.single('image'));
 
       // Extract data from request
-      const { name, foodType, quantity, expiryDate, description, locationAddress } = req.body;
+      const { name, foodType, quantity, expiryDate, description, locationAddress, userId } = req.body;
 
       // Validate required fields
       if (!name || !foodType || !quantity || !expiryDate || !locationAddress) {
@@ -92,7 +93,8 @@ export default async function handler(req, res) {
         locationAddress: locationAddress.trim(),
         imageUrl: req.file ? `/food-images/${req.file.filename}` : null,
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
+        userId: userId || null
       };
 
       // Validate quantity is a positive number
@@ -108,6 +110,51 @@ export default async function handler(req, res) {
       const result = await foodCollection.insertOne(foodItem);
 
       if (result.insertedId) {
+        // Update user's impact data if userId is provided
+        if (userId) {
+          try {
+            const impactCollection = await getImpactCollection();
+            
+            // Find existing impact data or create default
+            let userImpact = await impactCollection.findOne({ userId });
+            
+            if (!userImpact) {
+              // Create default impact data
+              userImpact = {
+                userId,
+                mealsProvided: 0,
+                foodSavedLbs: 0,
+                recipientsHelped: 0,
+                createdAt: new Date(),
+                updatedAt: new Date()
+              };
+            }
+            
+            // Update impact metrics
+            const newMealsProvided = (userImpact.mealsProvided || 0) + parseInt(quantity);
+            const randomFoodSaved = Math.floor(Math.random() * 10) + 1; // Random 1-10 lbs
+            const newFoodSavedLbs = (userImpact.foodSavedLbs || 0) + randomFoodSaved;
+            const newRecipientsHelped = (userImpact.recipientsHelped || 0) + 1;
+            
+            // Update or insert impact data
+            await impactCollection.updateOne(
+              { userId },
+              {
+                $set: {
+                  mealsProvided: newMealsProvided,
+                  foodSavedLbs: newFoodSavedLbs,
+                  recipientsHelped: newRecipientsHelped,
+                  updatedAt: new Date()
+                }
+              },
+              { upsert: true }
+            );
+          } catch (impactError) {
+            console.error('Error updating impact data:', impactError);
+            // Don't fail the main operation if impact update fails
+          }
+        }
+
         res.status(201).json({
           success: true,
           message: 'Food item added successfully',
