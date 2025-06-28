@@ -18,17 +18,17 @@ const tabs = [
 
 const requests = [
   {
-    image: '/food-images/image-1750744622167-826873963.jpeg',
+    image: '/food-images/Fresh_Produce_Box.png',
     title: 'Fresh Produce Box',
     expires: 'Expires in 2 hours',
   },
   {
-    image: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=60&q=80',
+    image: '/food-images/Bakery_Surplus.png',
     title: 'Bakery Surplus',
     expires: 'Expires in 1 day',
   },
   {
-    image: 'https://images.unsplash.com/photo-1519864600265-abb23847ef2c?auto=format&fit=crop&w=60&q=80',
+    image: '/food-images/Canned_Goods.png',
     title: 'Canned Goods',
     expires: 'Expires in 3 days',
   },
