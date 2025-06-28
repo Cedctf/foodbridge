@@ -1,9 +1,13 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useUser } from "../contexts/UserContext";
+import { useRouter } from "next/router";
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
+  const { isAuthenticated } = useUser();
+  const router = useRouter();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -12,6 +16,14 @@ export default function Navbar() {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  const handleProfileClick = () => {
+    if (isAuthenticated) {
+      router.push('/profile');
+    } else {
+      router.push('/login');
+    }
+  };
 
   return (
     <nav className={`fixed top-0 w-full z-40 transition-all duration-300 ${isScrolled ? 'bg-white/90 backdrop-blur-md shadow-lg' : 'bg-transparent'}`}>
@@ -37,9 +49,13 @@ export default function Navbar() {
             <Link href="/foodListing" className="text-gray-700 hover:text-green-600 transition-colors">Listings</Link>
             <Link href="/uploadFood" className="text-gray-700 hover:text-green-600 transition-colors">Donate</Link>
             <Link href="/blog" className="text-gray-700 hover:text-green-600 transition-colors">Blog</Link>
-            <Link href="/profile" className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-4 py-2 rounded-full hover:shadow-lg transition-all duration-300 transform hover:scale-105">
+            
+            <button 
+              onClick={handleProfileClick}
+              className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-4 py-2 rounded-full hover:shadow-lg transition-all duration-300 transform hover:scale-105"
+            >
               Profile
-            </Link>
+            </button>
           </div>
         </div>
       </div>

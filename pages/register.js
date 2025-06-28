@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useRouter } from 'next/router';
+import { useUser } from '../contexts/UserContext';
 
 export default function Register() {
   const [form, setForm] = useState({
@@ -11,6 +12,7 @@ export default function Register() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const router = useRouter();
+  const { login } = useUser();
 
   const handleChange = (e) => {
     setForm({
@@ -39,13 +41,26 @@ export default function Register() {
       const data = await response.json();
 
       if (response.ok) {
-        setSuccess('Registration successful! Welcome to Food Bridge!');
-        // Reset form
-        setForm({ username: '', email: '', password: '' });
-        // Redirect after 2 seconds
-        setTimeout(() => {
-          router.push('/login'); // You can change this to wherever you want to redirect
-        }, 2000);
+        setSuccess('Registration successful! Logging you in...');
+        
+        // Automatically log in the user after successful registration
+        const loginResult = await login({
+          identifier: form.username, // Use username for login
+          password: form.password
+        });
+
+        if (loginResult.success) {
+          // Redirect to profile after successful auto-login
+          setTimeout(() => {
+            router.push('/profile');
+          }, 1500);
+        } else {
+          // If auto-login fails, redirect to login page
+          setSuccess('Registration successful! Please log in.');
+          setTimeout(() => {
+            router.push('/login');
+          }, 2000);
+        }
       } else {
         setError(data.error || 'Registration failed');
       }
