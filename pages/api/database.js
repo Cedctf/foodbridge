@@ -46,4 +46,9 @@ export async function getFoodCollection() {
   return db.collection('foods');
 }
 
+export async function getImpactCollection() {
+  const { db } = await connectToDatabase();
+  return db.collection('impact');
+}
+
 export default clientPromise;

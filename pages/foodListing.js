@@ -1,12 +1,19 @@
 import { useState, useEffect } from 'react';
 import Head from 'next/head';
 import Image from 'next/image';
+import { Geist } from 'next/font/google';
+
+const geistSans = Geist({
+  variable: '--font-geist-sans',
+  subsets: ['latin'],
+});
 
 export default function FoodListing() {
   const [foods, setFoods] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [filter, setFilter] = useState('');
+  const [searchFilter, setSearchFilter] = useState('');
+  const [foodTypeFilter, setFoodTypeFilter] = useState('');
   const [sortBy, setSortBy] = useState('newest');
 
   useEffect(() => {
@@ -58,10 +65,13 @@ export default function FoodListing() {
   };
 
   const filteredAndSortedFoods = foods
-    .filter(food => 
-      filter === '' || food.foodType.toLowerCase().includes(filter.toLowerCase()) ||
-      food.name.toLowerCase().includes(filter.toLowerCase())
-    )
+    .filter(food => {
+      const matchesSearch = searchFilter === '' || 
+        food.name.toLowerCase().includes(searchFilter.toLowerCase()) ||
+        food.foodType.toLowerCase().includes(searchFilter.toLowerCase());
+      const matchesFoodType = foodTypeFilter === '' || food.foodType === foodTypeFilter;
+      return matchesSearch && matchesFoodType;
+    })
     .sort((a, b) => {
       switch (sortBy) {
         case 'newest':
@@ -83,7 +93,7 @@ export default function FoodListing() {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-700 mx-auto"></div>
           <p className="mt-4 text-gray-600">Loading food items...</p>
         </div>
       </div>
@@ -97,9 +107,9 @@ export default function FoodListing() {
         <meta name="description" content="Browse available food items in your community" />
       </Head>
 
-      <div className="min-h-screen bg-gray-50">
+      <div className={`${geistSans.className} min-h-screen bg-gradient-to-br from-green-50 via-white to-emerald-50`}>
         {/* Header */}
-        <div className="bg-white shadow">
+        <div className="bg-white/80 backdrop-blur-sm shadow-sm">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
             <div className="md:flex md:items-center md:justify-between">
               <div className="flex-1 min-w-0">
@@ -115,39 +125,66 @@ export default function FoodListing() {
         </div>
 
         {/* Filters and Sort */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="bg-white rounded-lg shadow p-4 mb-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Search/Filter */}
-              <div>
-                <label htmlFor="filter" className="block text-sm font-medium text-gray-700 mb-2">
-                  Search by name or food type
-                </label>
-                <input
-                  id="filter"
-                  type="text"
-                  value={filter}
-                  onChange={(e) => setFilter(e.target.value)}
-                  placeholder="Search food items..."
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 text-gray-700">
+          <div className="max-w-3xl mx-auto mb-8">
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </div>
+              <input
+                type="text"
+                value={searchFilter}
+                onChange={(e) => setSearchFilter(e.target.value)}
+                className="w-full pl-12 pr-4 py-3 border-0 text-base rounded-xl shadow-sm bg-green-50/80 focus:outline-none focus:ring-2 focus:ring-green-500"
+                placeholder="Search by location or food type"
+              />
+            </div>
+
+            <div className="flex gap-3 mt-4">
+              <div className="flex-1">
+                <button
+                  onClick={() => {}}
+                  className="w-full px-4 py-2 bg-green-50/80 rounded-lg border border-green-200 shadow-sm hover:bg-green-100/80 flex items-center justify-between"
+                >
+                  <span className="text-gray-700">Location</span>
+                  <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
               </div>
 
-              {/* Sort */}
-              <div>
-                <label htmlFor="sort" className="block text-sm font-medium text-gray-700 mb-2">
-                  Sort by
-                </label>
+              <div className="flex-1 text-gray-700">
                 <select
-                  id="sort"
+                  value={foodTypeFilter}
+                  onChange={(e) => setFoodTypeFilter(e.target.value)}
+                  className="w-full px-4 py-2 bg-green-50/80 rounded-lg border border-green-200 shadow-sm hover:bg-green-100/80 appearance-none cursor-pointer"
+                >
+                  <option value="">Select food type</option>
+                  <option value="Fruits">Fruits</option>
+                  <option value="Vegetables">Vegetables</option>
+                  <option value="Grains">Grains</option>
+                  <option value="Dairy">Dairy</option>
+                  <option value="Meat">Meat</option>
+                  <option value="Seafood">Seafood</option>
+                  <option value="Beverages">Beverages</option>
+                  <option value="Snacks">Snacks</option>
+                  <option value="Prepared Meals">Prepared Meals</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+
+              <div className="flex-1 text-gray-700">
+                <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  className="w-full px-4 py-2 bg-green-50/80 rounded-lg border border-green-200 shadow-sm hover:bg-green-100/80 appearance-none cursor-pointer"
                 >
-                  <option value="newest">Newest first</option>
-                  <option value="oldest">Oldest first</option>
-                  <option value="expiry-soon">Expiring soon</option>
-                  <option value="expiry-later">Expiring later</option>
+                  <option value="expiry-soon">Expiry Date ↑</option>
+                  <option value="expiry-later">Expiry Date ↓</option>
+                  <option value="newest">Newest First</option>
+                  <option value="oldest">Oldest First</option>
                   <option value="name">Name (A-Z)</option>
                 </select>
               </div>
@@ -165,9 +202,9 @@ export default function FoodListing() {
           {filteredAndSortedFoods.length === 0 ? (
             <div className="text-center py-12">
               <div className="text-gray-500 text-lg">
-                {filter ? 'No food items match your search.' : 'No food items available yet.'}
+                {searchFilter || foodTypeFilter ? 'No food items match your search.' : 'No food items available yet.'}
               </div>
-              {!filter && (
+              {!searchFilter && !foodTypeFilter && (
                 <p className="text-gray-400 mt-2">
                   Be the first to share food with the community!
                 </p>
@@ -179,7 +216,7 @@ export default function FoodListing() {
                 const expiryStatus = getExpiryStatus(food.expiryDate);
                 
                 return (
-                  <div key={food._id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+                  <div key={food._id} className="bg-white/90 backdrop-blur-sm rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-all hover:scale-[1.02] border border-green-100">
                     {/* Image */}
                     <div className="relative h-48 bg-gray-200">
                       {food.imageUrl ? (
@@ -249,7 +286,7 @@ export default function FoodListing() {
                       <div className="mt-4 pt-4 border-t border-gray-200">
                         <div className="flex items-center justify-between text-xs text-gray-500">
                           <span>Posted: {formatDate(food.createdAt)}</span>
-                          <button className="bg-indigo-600 text-white px-3 py-1 rounded-md text-sm hover:bg-indigo-700 transition-colors">
+                          <button className="bg-green-600 text-white px-3 py-1 rounded-md text-sm hover:bg-green-700 transition-all hover:scale-105">
                             Contact
                           </button>
                         </div>
