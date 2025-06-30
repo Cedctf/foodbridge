@@ -47,6 +47,7 @@ export default function Navbar() {
           </div>
           <div className="hidden md:flex items-center space-x-8">
             <Link href="/dashboard" className="text-gray-700 hover:text-green-600 transition-colors">Dashboard</Link>
+            <Link href="/requestdashboard" className="text-gray-700 hover:text-green-600 transition-colors">My Requests</Link>
             <Link href="/foodListing" className="text-gray-700 hover:text-green-600 transition-colors">Listings</Link>
             <Link href="/map" className="text-gray-700 hover:text-green-600 transition-colors">Map</Link>
             <Link href="/uploadFood" className="text-gray-700 hover:text-green-600 transition-colors">Donate</Link>
