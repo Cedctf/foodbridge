@@ -18,9 +18,23 @@ export default function handler(req, res) {
       addTrailingSlash: false,
       cors: {
         origin: process.env.NODE_ENV === "production" 
-          ? "https://your-domain.com" // Replace with your actual domain
-          : "http://localhost:3000",
-        methods: ["GET", "POST"]
+          ? process.env.NEXT_PUBLIC_SITE_URL || "https://your-foodbridge-domain.com"
+          : [
+              "http://localhost:3000", 
+              "http://localhost:3001", 
+              "http://localhost:3002", 
+              "http://127.0.0.1:3000",
+              "http://127.0.0.1:3001",
+              "http://127.0.0.1:3002",
+              "http://172.20.10.6:3000",
+              "http://172.20.10.6:3001",
+              "http://172.20.10.6:3002",
+              /^http:\/\/192\.168\.\d{1,3}\.\d{1,3}:(3000|3001|3002)$/,
+              /^http:\/\/10\.\d{1,3}\.\d{1,3}\.\d{1,3}:(3000|3001|3002)$/,
+              /^http:\/\/172\.\d{1,3}\.\d{1,3}\.\d{1,3}:(3000|3001|3002)$/
+            ],
+        methods: ["GET", "POST"],
+        credentials: true
       }
     });
     
