@@ -9,15 +9,15 @@ const GoogleMapComponent = dynamic(
 
 export default function MapPage() {
   return (
-    <div className="min-h-screen" style={{ background: '#F7FCFA' }}>
+    <div className="min-h-screen bg-[#f7fcfa] pb-16">
       <Navbar />
       
       {/* Main Content */}
-      <div className="pt-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="mb-6">
+      <div className="pt-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="mb-4">
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Food Map</h1>
-            <p className="text-gray-600">Discover food donations and restaurants near you</p>
+            <p className="text-[#45A180]">Discover food donations and restaurants near you</p>
           </div>
           
           {/* Map Container with integrated search */}

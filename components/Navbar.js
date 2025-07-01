@@ -26,7 +26,7 @@ export default function Navbar() {
   };
 
   return (
-    <nav className={`fixed top-0 w-full z-40 transition-all duration-300 ${isScrolled ? 'bg-white/95 backdrop-blur-md shadow-lg' : 'bg-white/90 backdrop-blur-sm'}`}>
+    <nav className={`fixed top-0 w-full z-40 transition-all duration-300 ${isScrolled ? 'bg-[#F7FCFA] shadow-lg' : 'bg-[#F7FCFA]'}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center space-x-2">
@@ -40,16 +40,16 @@ export default function Navbar() {
                   className="object-contain"
                 />
               </div>
-              <span className="text-2xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+              <span className="text-2xl font-bold text-[#45A180]">
                 FoodBridge
               </span>
             </Link>
           </div>
           <div className="hidden md:flex items-center space-x-8">
-            <Link href="/foodListing" className="text-gray-700 hover:text-green-600 transition-colors">Listings</Link>
-            <Link href="/map" className="text-gray-700 hover:text-green-600 transition-colors">Map</Link>
-            <Link href="/uploadFood" className="text-gray-700 hover:text-green-600 transition-colors">Donate</Link>
-            <Link href="/blog" className="text-gray-700 hover:text-green-600 transition-colors">Blog</Link>
+            <Link href="/foodListing" className="text-[#45A180] hover:text-[#378667] transition-colors">Listings</Link>
+            <Link href="/map" className="text-[#45A180] hover:text-[#378667] transition-colors">Map</Link>
+            <Link href="/uploadFood" className="text-[#45A180] hover:text-[#378667] transition-colors">Donate</Link>
+            <Link href="/blog" className="text-[#45A180] hover:text-[#378667] transition-colors">Blog</Link>
             
             <button 
               onClick={handleProfileClick}

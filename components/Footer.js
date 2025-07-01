@@ -5,23 +5,23 @@ export default function Footer() {
   const currentYear = new Date().getFullYear();
   
   return (
-    <footer className="bg-white py-8 px-6 border-t border-gray-200">
+    <footer className="bg-[#F7FCFA] pt-12 pb-8 px-6 border-t border-gray-200">
       <div className="max-w-6xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
           <div>
-            <Link href="/privacy" className="text-sm text-gray-600 hover:text-gray-900">
+            <Link href="/privacy" className="text-sm text-[#45A180] hover:text-[#378667]">
               Privacy Policy
             </Link>
           </div>
           
           <div className="text-center">
-            <Link href="/terms" className="text-sm text-gray-600 hover:text-gray-900">
+            <Link href="/terms" className="text-sm text-[#45A180] hover:text-[#378667]">
               Terms of Service
             </Link>
           </div>
           
           <div className="text-right">
-            <Link href="/support" className="text-sm text-gray-600 hover:text-gray-900">
+            <Link href="/support" className="text-sm text-[#45A180] hover:text-[#378667]">
               Help & Support
             </Link>
           </div>
@@ -42,7 +42,7 @@ export default function Footer() {
           </Link>
         </div>
         
-        <div className="text-center text-sm text-gray-500">
+        <div className="text-center text-sm text-[#45A180]">
           &copy;{currentYear} FoodBridge. All rights reserved.
         </div>
       </div>
