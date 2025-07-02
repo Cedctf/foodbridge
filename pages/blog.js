@@ -23,7 +23,7 @@ const sampleBlogPosts = [
     slug: "sustainable-living-tips-reducing-food-waste",
     excerpt: "Discover practical tips and strategies for reducing food waste in your daily life and promoting sustainability.",
     content: "Full article content here...",
-    imageUrl: "/blog-images/blog2.jpeg",
+    imageUrl: "/blog-images/blog2.jpg",
     date: "July 22, 2023",
     category: "Sustainability",
     author: "Michael Chen"
