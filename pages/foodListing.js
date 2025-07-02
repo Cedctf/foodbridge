@@ -390,7 +390,7 @@ export default function FoodListing() {
                                 : 'bg-green-600 text-white hover:bg-green-700'
                             }`}
                           >
-                            {hasUserRequested(food._id) ? 'Requested' : 'Contact'}
+                            {hasUserRequested(food._id) ? 'Requested' : 'Request'}
                           </button>
                         </div>
                       </div>

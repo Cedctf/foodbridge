@@ -3,11 +3,13 @@ import { useUser } from '../contexts/UserContext';
 import Head from 'next/head';
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
+import { useRouter } from 'next/router';
 
 
 
 export default function RequestDashboard() {
   const { user, isAuthenticated, loading } = useUser();
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState('all');
   const [requests, setRequests] = useState([]);
   const [requestsLoading, setRequestsLoading] = useState(true);
@@ -187,6 +189,20 @@ export default function RequestDashboard() {
     }`;
   };
 
+  const handleContactDonor = (request) => {
+    // Store request context for the chat
+    sessionStorage.setItem('chatContext', JSON.stringify({
+      type: 'contact_donor',
+      requestId: request.requestId,
+      foodTitle: request.title,
+      requesterName: request.requesterName,
+      timestamp: new Date().toISOString()
+    }));
+    
+    // Navigate to chat page to contact the donor
+    router.push('/chat');
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#F5F5F5]">
@@ -340,7 +356,7 @@ export default function RequestDashboard() {
                       </div>
                     </div>
 
-                    {/* Additional Info */}
+                    {/* Additional Info & Actions */}
                     <div className="flex flex-col items-end space-y-2 text-right">
                       <div className="text-[12px] text-[#666666]">
                         Request ID: {request.requestId.slice(-8)}
@@ -349,6 +365,20 @@ export default function RequestDashboard() {
                         <div className="text-[12px] text-[#666666] max-w-[200px] truncate">
                           📍 {request.locationAddress}
                         </div>
+                      )}
+                      
+                      {/* Contact Button - Show for pending and approved requests */}
+                      {(request.status === 'pending' || request.status === 'approved' || request.status === 'accepted') && (
+                        <button
+                          onClick={() => handleContactDonor(request)}
+                          className="mt-2 bg-[#38A169] hover:bg-[#2F855A] text-white px-4 py-2 rounded-[6px] text-[14px] font-medium transition-colors duration-200 flex items-center space-x-2"
+                          title="Contact the donor"
+                        >
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                          </svg>
+                          <span>Contact Donor</span>
+                        </button>
                       )}
                     </div>
                   </div>
