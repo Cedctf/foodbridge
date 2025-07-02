@@ -5,83 +5,13 @@ import SearchBar from './SearchBar';
 const containerStyle = {
   width: '100%',
   height: '500px',
-  borderRadius: '12px',
+  borderRadius: '4px',
   border: '1px solid #e0e0e0',
   overflow: 'hidden',
-  boxShadow: '0 8px 32px rgba(0,0,0,0.1)'
 };
 
 // Google Maps libraries to load
 const libraries = ['places'];
-
-// Sample food posts data - replace with your actual data source
-const sampleFoodPosts = [
-  {
-    id: 1,
-    title: "Delicious Nasi Lemak",
-    description: "Traditional Malaysian breakfast with coconut rice, sambal, and fried chicken",
-    price: "RM 8.50",
-    rating: 4.5,
-    image: "/api/placeholder/150/100",
-    restaurant: "Warung Pak Ali",
-    position: { lat: 3.1390, lng: 101.6869 },
-    category: "local",
-    available: true
-  },
-  {
-    id: 2,
-    title: "Char Kway Teow",
-    description: "Stir-fried rice noodles with prawns, Chinese sausage, and bean sprouts",
-    price: "RM 12.00",
-    rating: 4.8,
-    image: "/api/placeholder/150/100",
-    restaurant: "Uncle Lim's Stall",
-    position: { lat: 3.1420, lng: 101.6890 },
-    category: "street-food",
-    available: true
-  },
-  {
-    id: 3,
-    title: "Roti Canai Set",
-    description: "Flaky flatbread served with curry dhal and sambal",
-    price: "RM 6.00",
-    rating: 4.2,
-    image: "/api/placeholder/150/100",
-    restaurant: "Mamak Corner",
-    position: { lat: 3.1360, lng: 101.6850 },
-    category: "indian",
-    available: false
-  }
-];
-
-// Custom food icon component
-const FoodIcon = ({ category, available }) => {
-  const getIconColor = () => {
-    if (!available) return '#999999';
-    switch (category) {
-      case 'local': return '#FF6B6B';
-      case 'street-food': return '#4ECDC4';
-      case 'indian': return '#45B7D1';
-      case 'chinese': return '#96CEB4';
-      case 'western': return '#FFEAA7';
-      default: return '#DDA0DD';
-    }
-  };
-
-  return (
-    `data:image/svg+xml;base64,${btoa(`
-      <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40">
-        <circle cx="20" cy="20" r="18" fill="${getIconColor()}" stroke="white" stroke-width="3"/>
-        <path d="M12 16h16v2H12zm2 4h12v2H14zm1 4h10v2H15z" fill="white"/>
-        ${!available ? '<line x1="8" y1="8" x2="32" y2="32" stroke="white" stroke-width="3"/>' : ''}
-      </svg>
-    `)}`
-  );
-};
-
-// Search bar component
-// Remove the entire SearchBar component definition (lines 82-149)
-// The SearchBar component should only exist in SearchBar.js
 
 // Food post info window component
 const FoodPostInfo = ({ post, onClose }) => (
@@ -207,7 +137,7 @@ const LocationButton = ({ onClick, loading }) => (
       borderRadius: '20px', // Google Maps style
       backgroundColor: 'white',
       border: 'none',
-      boxShadow: '0 2px 6px rgba(0,0,0,0.3)',
+      boxShadow: '0 1px 2px rgba(0,0,0,0.15)',
       cursor: 'pointer',
       display: 'flex',
       alignItems: 'center',
@@ -247,9 +177,9 @@ const LocationButton = ({ onClick, loading }) => (
   </button>
 );
 
-const MapWithLocationButton = () => {
+const MapWithLocationButton = ({ onLocationChange }) => {
   const [userLocation, setUserLocation] = useState(null);
-  const [mapCenter, setMapCenter] = useState({ lat: 3.1390, lng: 101.6869 });
+  const [mapCenter, setMapCenter] = useState({ lat: 3.1390, lng: 101.6869 }); // Default to KL
   const [mapZoom, setMapZoom] = useState(14);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -258,6 +188,16 @@ const MapWithLocationButton = () => {
   const [searchedLocation, setSearchedLocation] = useState(null);
   const mapRef = useRef(null);
   const autocompleteRef = useRef(null);
+
+  // Notify parent component when location changes
+  useEffect(() => {
+    // Use the searched location if available, otherwise use user location or default
+    const activeLocation = searchedLocation ? searchedLocation.position : 
+                           userLocation ? userLocation : 
+                           mapCenter;
+    
+    onLocationChange && onLocationChange(activeLocation);
+  }, [userLocation, searchedLocation, mapCenter, onLocationChange]);
 
   const getCurrentLocation = useCallback(() => {
     if (!navigator.geolocation) {
@@ -348,7 +288,13 @@ const MapWithLocationButton = () => {
   const getFoodPostIcon = (post) => {
     if (isGoogleMapsLoaded && window.google && window.google.maps) {
       return {
-        url: FoodIcon({ category: post.category, available: post.available }),
+        url: `data:image/svg+xml;base64,${btoa(`
+          <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40">
+            <circle cx="20" cy="20" r="18" fill="${post.available ? '#FF6B6B' : '#999999'}" stroke="white" stroke-width="3"/>
+            <path d="M12 16h16v2H12zm2 4h12v2H14zm1 4h10v2H15z" fill="white"/>
+            ${!post.available ? '<line x1="8" y1="8" x2="32" y2="32" stroke="white" stroke-width="3"/>' : ''}
+          </svg>
+        `)}`,
         scaledSize: { width: 40, height: 40 }
       };
     }
@@ -468,16 +414,6 @@ const MapWithLocationButton = () => {
             title={searchedLocation.address}
           />
         )}
-        
-        {sampleFoodPosts.map((post) => (
-          <Marker
-            key={post.id}
-            position={post.position}
-            icon={getFoodPostIcon(post)}
-            title={post.title}
-            onClick={() => setSelectedPost(post)}
-          />
-        ))}
         
         {selectedPost && (
           <InfoWindow

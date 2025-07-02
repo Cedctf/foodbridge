@@ -3,7 +3,7 @@ import Head from 'next/head';
 import Image from 'next/image';
 import Link from 'next/link';
 import Navbar from '../../components/Navbar';
-// import Footer from '../../components/footer';
+import Footer from '../../components/footer';
 
 // Sample blog posts data - this should match the data in blog.js
 const sampleBlogPosts = [
@@ -24,7 +24,7 @@ const sampleBlogPosts = [
     slug: "sustainable-living-tips-reducing-food-waste",
     excerpt: "Discover practical tips and strategies for reducing food waste in your daily life and promoting sustainability.",
     content: "Reducing food waste starts with small, everyday actions that can make a big difference. Here are some practical tips to help you minimize food waste in your home:\n\n1. **Plan your meals**: Before shopping, plan your meals for the week and make a detailed shopping list. This helps you buy only what you need.\n\n2. **Store food properly**: Learn the best ways to store different types of food to extend their shelf life. For example, keep herbs fresh by placing them in a glass of water, or store bread in the freezer if you won't use it right away.\n\n3. **Understand food labels**: 'Best before' dates are about quality, not safety. Many foods are still safe to eat after this date. Use your senses to determine if food is still good.\n\n4. **Use leftovers creatively**: Transform leftovers into new meals. For instance, leftover vegetables can be used in soups or stir-fries.\n\n5. **Compost food scraps**: If you have food waste, composting is a great way to recycle nutrients back into the soil.\n\nBy adopting these practices, you can significantly reduce your food waste footprint and contribute to a more sustainable future.",
-    imageUrl: "/blog-images/blog2.jpg",
+    imageUrl: "/blog-images/blog2.jpeg",
     date: "July 22, 2023",
     category: "Sustainability",
     author: "Michael Chen"
