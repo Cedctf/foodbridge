@@ -196,10 +196,34 @@ export default async function handler(req, res) {
     }
   } else if (req.method === 'GET') {
     try {
-      // Get all food items (you can add pagination later)
       const foodCollection = await getFoodCollection();
-      const foods = await foodCollection.find({}).sort({ createdAt: -1 }).toArray();
+      
+      // Check if an ID is provided in the query
+      if (req.query.id) {
+        const { ObjectId } = require('mongodb');
+        try {
+          const food = await foodCollection.findOne({ _id: new ObjectId(req.query.id) });
+          if (food) {
+            return res.status(200).json({
+              success: true,
+              data: food
+            });
+          } else {
+            return res.status(404).json({
+              success: false,
+              message: 'Food item not found'
+            });
+          }
+        } catch (error) {
+          return res.status(400).json({
+            success: false,
+            message: 'Invalid food ID format'
+          });
+        }
+      }
 
+      // If no ID provided, return all food items
+      const foods = await foodCollection.find({}).toArray();
       res.status(200).json({
         success: true,
         data: foods

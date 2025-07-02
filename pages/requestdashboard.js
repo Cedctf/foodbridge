@@ -1,70 +1,149 @@
-import { useAuth } from '../hooks/useAuth';
+
 import { useUser } from '../contexts/UserContext';
 import Head from 'next/head';
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 
-// Mock data for requests - in a real app, this would come from API
-const mockRequests = [
-  {
-    id: 1,
-    title: "Fresh Produce Box",
-    expiryTime: "2 hours",
-    status: "pending",
-    imageUrl: "/food-images/image-1751134294751-772150386.jpg",
-    requestedAt: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
-    description: "Assorted fresh vegetables and fruits"
-  },
-  {
-    id: 2,
-    title: "Bakery Surplus",
-    expiryTime: "1 day",
-    status: "pending",
-    imageUrl: "/food-images/image-1751134500396-239599783.jpg",
-    requestedAt: new Date(Date.now() - 8 * 60 * 60 * 1000), // 8 hours ago
-    description: "Fresh bread and pastries"
-  },
-  {
-    id: 3,
-    title: "Canned Goods",
-    expiryTime: "3 days",
-    status: "pending",
-    imageUrl: "/food-images/image-1751135869040-714805904.jpg",
-    requestedAt: new Date(Date.now() - 12 * 60 * 60 * 1000), // 12 hours ago
-    description: "Non-perishable canned items"
-  }
-];
+
 
 export default function RequestDashboard() {
-  const { user, isAuthenticated, loading } = useAuth();
+  const { user, isAuthenticated, loading } = useUser();
   const [activeTab, setActiveTab] = useState('all');
   const [requests, setRequests] = useState([]);
   const [requestsLoading, setRequestsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Simulate API call to fetch user requests
     const fetchRequests = async () => {
       setRequestsLoading(true);
+      setError(null);
+      
       try {
-        // In a real app, this would be an API call like:
-        // const response = await fetch('/api/requests');
-        // const data = await response.json();
+        // Check localStorage for user requests (for non-authenticated users)
+        const localRequests = JSON.parse(localStorage.getItem('userRequests') || '[]');
         
-        // For now, we'll use mock data
-        setTimeout(() => {
-          setRequests(mockRequests);
-          setRequestsLoading(false);
-        }, 1000);
+        let userRequestsData = [];
+        
+        if (isAuthenticated && user?.id) {
+          // Fetch requests from API for authenticated users
+          const response = await fetch(`/api/requests?userId=${user.id}`);
+          const result = await response.json();
+          
+          if (result.success) {
+            userRequestsData = result.data;
+          } else {
+            throw new Error(result.message || 'Failed to fetch requests');
+          }
+        } else {
+          // Use localStorage requests for non-authenticated users
+          userRequestsData = await Promise.all(
+            localRequests.map(async (localRequest) => {
+              try {
+                const response = await fetch(`/api/requests?id=${localRequest.requestId}`);
+                const result = await response.json();
+                return result.success ? result.data : null;
+              } catch (error) {
+                console.error('Error fetching request:', error);
+                return null;
+              }
+            })
+          );
+          userRequestsData = userRequestsData.filter(request => request !== null);
+        }
+
+        // Fetch food details for each request
+        const requestsWithFoodDetails = await Promise.all(
+          userRequestsData.map(async (request) => {
+            try {
+              const foodResponse = await fetch(`/api/foods?id=${request.foodId}`);
+              const foodResult = await foodResponse.json();
+              
+              if (foodResult.success) {
+                const foodData = foodResult.data;
+                
+                // Calculate expiry time
+                const expiryDate = new Date(foodData.expiryDate);
+                const now = new Date();
+                const timeDiff = expiryDate - now;
+                const daysDiff = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+                
+                let expiryTime;
+                if (daysDiff < 0) {
+                  expiryTime = 'Expired';
+                } else if (daysDiff === 0) {
+                  expiryTime = 'Today';
+                } else if (daysDiff === 1) {
+                  expiryTime = '1 day';
+                } else {
+                  expiryTime = `${daysDiff} days`;
+                }
+
+                return {
+                  id: request._id,
+                  requestId: request._id,
+                  title: foodData.name,
+                  description: foodData.description || `${foodData.quantity} available`,
+                  expiryTime,
+                  status: request.status,
+                  imageUrl: foodData.imageUrl,
+                  requestedAt: new Date(request.createdAt),
+                  foodType: foodData.foodType,
+                  quantity: foodData.quantity,
+                  locationAddress: foodData.locationAddress,
+                  requesterName: request.requesterName,
+                  requesterEmail: request.requesterEmail,
+                  message: request.message
+                };
+              } else {
+                // Food not found, return request with minimal info
+                return {
+                  id: request._id,
+                  requestId: request._id,
+                  title: 'Food item not found',
+                  description: 'This food item may have been removed',
+                  expiryTime: 'Unknown',
+                  status: request.status,
+                  imageUrl: null,
+                  requestedAt: new Date(request.createdAt),
+                  requesterName: request.requesterName,
+                  requesterEmail: request.requesterEmail,
+                  message: request.message
+                };
+              }
+            } catch (error) {
+              console.error('Error fetching food details:', error);
+              // Return request with minimal info on error
+              return {
+                id: request._id,
+                requestId: request._id,
+                title: 'Error loading food details',
+                description: 'Unable to load food information',
+                expiryTime: 'Unknown',
+                status: request.status,
+                imageUrl: null,
+                requestedAt: new Date(request.createdAt),
+                requesterName: request.requesterName,
+                requesterEmail: request.requesterEmail,
+                message: request.message
+              };
+            }
+          })
+        );
+
+        // Sort by most recent first
+        requestsWithFoodDetails.sort((a, b) => b.requestedAt - a.requestedAt);
+        
+        setRequests(requestsWithFoodDetails);
       } catch (error) {
         console.error('Error fetching requests:', error);
+        setError(error.message);
+      } finally {
         setRequestsLoading(false);
       }
     };
 
-    if (isAuthenticated) {
-      fetchRequests();
-    }
-  }, [isAuthenticated]);
+    fetchRequests();
+  }, [isAuthenticated, user]);
 
   const filterRequests = (status) => {
     if (status === 'all') return requests;
@@ -75,13 +154,28 @@ export default function RequestDashboard() {
     switch (status) {
       case 'pending':
         return 'bg-[#E6F5ED] text-[#38A169]';
+      case 'approved':
       case 'accepted':
         return 'bg-[#CCE6FF] text-[#2B6CB0]';
+      case 'rejected':
+        return 'bg-[#FFDCDC] text-[#E53E3E]';
+      case 'completed':
+        return 'bg-[#E6E6FA] text-[#6B46C1]';
       case 'expired':
         return 'bg-[#FFDCDC] text-[#E53E3E]';
       default:
         return 'bg-[#E6F5ED] text-[#38A169]';
     }
+  };
+
+  const formatDate = (date) => {
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
   };
 
   const getTabStyle = (tabName) => {
@@ -101,16 +195,7 @@ export default function RequestDashboard() {
     );
   }
 
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-[#F5F5F5]">
-        <div className="text-center">
-          <h1 className="text-2xl font-semibold text-[#333333] mb-4">Authentication Required</h1>
-          <p className="text-[#666666]">Please log in to view your requests.</p>
-        </div>
-      </div>
-    );
-  }
+
 
   const filteredRequests = filterRequests(activeTab);
 
@@ -128,6 +213,28 @@ export default function RequestDashboard() {
             <h1 className="text-[36px] font-semibold text-[#333333] leading-tight mb-2 font-sans">
               My Requests
             </h1>
+            <div className="flex items-center justify-between">
+              <p className="text-[#666666]">
+                {requestsLoading ? 'Loading...' : `${requests.length} total request${requests.length !== 1 ? 's' : ''}`}
+                {filteredRequests.length !== requests.length && !requestsLoading && (
+                  <span> • {filteredRequests.length} {activeTab}</span>
+                )}
+              </p>
+              <div className="flex items-center space-x-3">
+                {!isAuthenticated && (
+                  <div className="text-[12px] text-[#666666] bg-[#F0F0F0] px-3 py-1 rounded-[4px]">
+                    Showing local requests
+                  </div>
+                )}
+                <button
+                  onClick={() => window.location.reload()}
+                  className="text-[14px] text-[#38A169] hover:text-[#2F855A] transition-colors"
+                  title="Refresh requests"
+                >
+                  🔄 Refresh
+                </button>
+              </div>
+            </div>
           </div>
 
           {/* Tab Navigation */}
@@ -146,17 +253,28 @@ export default function RequestDashboard() {
                 Pending
               </button>
               <button
-                onClick={() => setActiveTab('accepted')}
-                className={getTabStyle('accepted')}
+                onClick={() => setActiveTab('approved')}
+                className={getTabStyle('approved')}
               >
-                Accepted
+                Approved
               </button>
             </nav>
           </div>
 
           {/* Requests List */}
           <div className="space-y-4">
-            {requestsLoading ? (
+            {error ? (
+              <div className="text-center py-12">
+                <div className="text-[#E53E3E] text-lg mb-2">Error loading requests</div>
+                <p className="text-[#666666] text-sm">{error}</p>
+                <button 
+                  onClick={() => window.location.reload()} 
+                  className="mt-4 bg-[#38A169] text-white px-4 py-2 rounded-md hover:bg-[#2F855A] transition-colors"
+                >
+                  Retry
+                </button>
+              </div>
+            ) : requestsLoading ? (
               <div className="text-center py-12">
                 <div className="text-[#38A169] text-lg">Loading your requests...</div>
               </div>
@@ -198,20 +316,40 @@ export default function RequestDashboard() {
 
                       {/* Request Details */}
                       <div className="flex-grow">
-                        <h3 className="text-[16px] font-semibold text-[#333333] mb-1">
-                          {request.title}
-                        </h3>
-                        <p className="text-[14px] text-[#666666]">
-                          Expires in {request.expiryTime}
+                        <div className="flex items-start justify-between mb-1">
+                          <h3 className="text-[16px] font-semibold text-[#333333]">
+                            {request.title}
+                          </h3>
+                          <span className={`px-2 py-1 rounded-[4px] text-[12px] font-medium ${getStatusColor(request.status)}`}>
+                            {request.status.charAt(0).toUpperCase() + request.status.slice(1)}
+                          </span>
+                        </div>
+                        <p className="text-[14px] text-[#666666] mb-1">
+                          {request.description}
                         </p>
+                        <div className="flex items-center space-x-4 text-[12px] text-[#666666]">
+                          <span>Expires: {request.expiryTime}</span>
+                          <span>Requested: {formatDate(request.requestedAt)}</span>
+                          {request.foodType && <span>Type: {request.foodType}</span>}
+                        </div>
+                        {request.message && (
+                          <p className="text-[12px] text-[#666666] mt-2 italic">
+                            Message: "{request.message}"
+                          </p>
+                        )}
                       </div>
                     </div>
 
-                    {/* Action Button */}
-                    <div className="flex items-center space-x-3">
-                      <button className="bg-[#38A169] text-[#FFFFFF] px-6 py-2 rounded-[4px] text-[16px] font-semibold hover:bg-[#2F855A] transition-colors duration-200">
-                        View
-                      </button>
+                    {/* Additional Info */}
+                    <div className="flex flex-col items-end space-y-2 text-right">
+                      <div className="text-[12px] text-[#666666]">
+                        Request ID: {request.requestId.slice(-8)}
+                      </div>
+                      {request.locationAddress && (
+                        <div className="text-[12px] text-[#666666] max-w-[200px] truncate">
+                          📍 {request.locationAddress}
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>

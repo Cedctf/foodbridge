@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import Head from 'next/head';
 import Image from 'next/image';
+import { useRouter } from 'next/router';
 import { Geist } from 'next/font/google';
 
 const geistSans = Geist({
@@ -9,16 +10,48 @@ const geistSans = Geist({
 });
 
 export default function FoodListing() {
+  const router = useRouter();
   const [foods, setFoods] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [searchFilter, setSearchFilter] = useState('');
   const [foodTypeFilter, setFoodTypeFilter] = useState('');
   const [sortBy, setSortBy] = useState('newest');
+  const [userRequests, setUserRequests] = useState([]);
+  const [notification, setNotification] = useState(null);
 
   useEffect(() => {
     fetchFoods();
+    loadUserRequests();
+
+    // Reload user requests when page regains focus (user comes back from other pages)
+    const handleFocus = () => {
+      loadUserRequests();
+    };
+
+    window.addEventListener('focus', handleFocus);
+    return () => window.removeEventListener('focus', handleFocus);
   }, []);
+
+  // Separate useEffect to handle router query changes
+  useEffect(() => {
+    // Check if redirected from successful request submission
+    if (router.query.requestSuccess === 'true') {
+      showNotification('Request submitted successfully! 🎉', 'success');
+      
+      // Clean up URL parameter using Next.js router
+      const { requestSuccess, ...restQuery } = router.query;
+      router.replace({
+        pathname: router.pathname,
+        query: restQuery
+      }, undefined, { shallow: true });
+    }
+  }, [router.query.requestSuccess]);
+
+  const loadUserRequests = () => {
+    const requests = JSON.parse(localStorage.getItem('userRequests') || '[]');
+    setUserRequests(requests);
+  };
 
   const fetchFoods = async () => {
     try {
@@ -62,6 +95,27 @@ export default function FoodListing() {
     if (daysLeft === 0) return { text: 'Expires today', color: 'text-orange-600 bg-orange-100' };
     if (daysLeft <= 3) return { text: `${daysLeft} days left`, color: 'text-yellow-600 bg-yellow-100' };
     return { text: `${daysLeft} days left`, color: 'text-green-600 bg-green-100' };
+  };
+
+  const hasUserRequested = (foodId) => {
+    return userRequests.some(request => request.foodId === foodId);
+  };
+
+  const showNotification = (message, type = 'info') => {
+    setNotification({ message, type });
+    setTimeout(() => setNotification(null), 3000);
+  };
+
+  const handleContactClick = (food) => {
+    if (hasUserRequested(food._id)) {
+      showNotification('You have already requested this food listing.', 'warning');
+      return;
+    }
+    
+    router.push({
+      pathname: '/request',
+      query: { foodId: food._id }
+    });
   };
 
   const filteredAndSortedFoods = foods
@@ -108,6 +162,48 @@ export default function FoodListing() {
       </Head>
 
       <div className={`${geistSans.className} min-h-screen bg-gradient-to-br from-green-50 via-white to-emerald-50`}>
+        {/* Notification */}
+        {notification && (
+          <div className={`fixed top-4 right-4 z-50 px-4 py-3 rounded-lg shadow-lg max-w-sm ${
+            notification.type === 'warning' 
+              ? 'bg-yellow-100 border border-yellow-400 text-yellow-800'
+              : notification.type === 'success'
+              ? 'bg-green-100 border border-green-400 text-green-800'
+              : 'bg-blue-100 border border-blue-400 text-blue-800'
+          }`}>
+            <div className="flex items-center">
+                             <div className="flex-shrink-0">
+                 {notification.type === 'warning' ? (
+                   <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                     <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                   </svg>
+                 ) : notification.type === 'success' ? (
+                   <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                   </svg>
+                 ) : (
+                   <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                     <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                   </svg>
+                 )}
+               </div>
+              <div className="ml-3">
+                <p className="text-sm font-medium">{notification.message}</p>
+              </div>
+              <div className="ml-auto pl-3">
+                <button
+                  onClick={() => setNotification(null)}
+                  className="inline-flex text-gray-400 hover:text-gray-600"
+                >
+                  <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Header */}
         <div className="bg-white/80 backdrop-blur-sm shadow-sm">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -286,8 +382,15 @@ export default function FoodListing() {
                       <div className="mt-4 pt-4 border-t border-gray-200">
                         <div className="flex items-center justify-between text-xs text-gray-500">
                           <span>Posted: {formatDate(food.createdAt)}</span>
-                          <button className="bg-green-600 text-white px-3 py-1 rounded-md text-sm hover:bg-green-700 transition-all hover:scale-105">
-                            Contact
+                          <button 
+                            onClick={() => handleContactClick(food)}
+                            className={`px-3 py-1 rounded-md text-sm transition-all hover:scale-105 ${
+                              hasUserRequested(food._id)
+                                ? 'bg-gray-400 text-white cursor-not-allowed'
+                                : 'bg-green-600 text-white hover:bg-green-700'
+                            }`}
+                          >
+                            {hasUserRequested(food._id) ? 'Requested' : 'Contact'}
                           </button>
                         </div>
                       </div>
