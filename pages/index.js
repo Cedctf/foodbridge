@@ -2,6 +2,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import Navigation from "../components/Navigation";
 import Hero from "../components/Hero";
 import Features from "@/components/Features";
+import Testimonials from "@/components/Testimonials";
+import CallToAction from "@/components/CallToAction";
 import Link from "next/link";
 
 const geistSans = Geist({
@@ -21,6 +23,8 @@ export default function Home() {
         {/* <Navigation /> */}
         <Hero />
         <Features />
+        <Testimonials />
+        <CallToAction />
       </div>
       
 

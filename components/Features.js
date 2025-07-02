@@ -1,9 +1,30 @@
 import { useEffect, useRef } from 'react';
-import { Leaf, MapPin, Users, HeartHandshake } from 'lucide-react';
+import Image from 'next/image';
+import { Search, Clock, Calendar } from 'lucide-react';
 
 export default function Features() {
   const sectionRef = useRef(null);
   const featureRefs = useRef([]);
+  const videoRef1 = useRef(null);
+  const videoRef2 = useRef(null);
+
+  const handleMouseEnter = (videoRef) => {
+    if (videoRef.current) {
+      const playPromise = videoRef.current.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(error => {
+          console.error("Video play failed:", error);
+        });
+      }
+    }
+  };
+
+  const handleMouseLeave = (videoRef) => {
+    if (videoRef.current) {
+      videoRef.current.pause();
+      videoRef.current.currentTime = 0;
+    }
+  };
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -38,106 +59,66 @@ export default function Features() {
       <div className="relative max-w-7xl mx-auto h-full flex flex-col justify-center">
         <div 
           ref={el => featureRefs.current[5] = el}
-          className="text-center mb-16 opacity-0"
+          className="text-center mb-12 opacity-0"
         >
           <h2 className="text-4xl md:text-5xl font-bold mb-4">
             <span className="bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 bg-clip-text text-transparent">
-              Why Choose FoodBridge
+              Our Features
             </span>
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Connecting communities through food sharing with our innovative platform
+            Powerful tools to help you manage and track your food donations efficiently
           </p>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {/* Feature 1 */}
-          <div 
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* Feature 1: Food Donating System */}
+          <div
             ref={el => featureRefs.current[0] = el}
-            className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 relative overflow-hidden shadow-xl hover:shadow-2xl transition-shadow duration-300 group opacity-0"
+            className="bg-white rounded-2xl p-8 border border-gray-200/80 shadow-sm transition-all duration-300 hover:shadow-lg hover:scale-[1.02] hover:-translate-y-1 opacity-0"
+            onMouseEnter={() => handleMouseEnter(videoRef1)}
+            onMouseLeave={() => handleMouseLeave(videoRef1)}
           >
-            <div className="absolute inset-0 bg-gradient-to-br from-green-50/30 to-emerald-50/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-            <div className="relative z-10">
-              <div className="w-14 h-14 mb-6 text-white bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl flex items-center justify-center">
-                <Leaf className="w-6 h-6" strokeWidth={1.5} />
-              </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">Reduce Food Waste</h3>
-              <p className="text-gray-600 leading-relaxed">
-                Connect with your community to share surplus food instead of throwing it away. 
-                Every item shared makes a difference in reducing food waste.
-              </p>
+            <h3 className="text-2xl font-bold text-gray-800 mb-3">Food Donating System</h3>
+            <p className="text-gray-500 leading-relaxed mb-6">
+              Easily list your surplus food items for donation. Our system guides you through the process, making it simple to connect with those in need.
+            </p>
+            <div className="mt-6 rounded-lg overflow-hidden border border-gray-200/80">
+              <video
+                ref={videoRef1}
+                src="/food-donating.mp4"
+                poster="/images/feature-donating.png"
+                loop
+                muted
+                playsInline
+                preload="metadata"
+                className="w-full h-auto object-cover"
+              />
             </div>
           </div>
 
-          {/* Feature 2 */}
-          <div 
+          {/* Feature 2: Donation Requesting System */}
+          <div
             ref={el => featureRefs.current[1] = el}
-            className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 relative overflow-hidden shadow-xl hover:shadow-2xl transition-shadow duration-300 group opacity-0"
+            className="bg-white rounded-2xl p-8 border border-gray-200/80 shadow-sm transition-all duration-300 hover:shadow-lg hover:scale-[1.02] hover:-translate-y-1 opacity-0"
+            onMouseEnter={() => handleMouseEnter(videoRef2)}
+            onMouseLeave={() => handleMouseLeave(videoRef2)}
           >
-            <div className="absolute inset-0 bg-gradient-to-br from-green-50/30 to-emerald-50/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-            <div className="relative z-10">
-              <div className="w-14 h-14 mb-6 text-white bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl flex items-center justify-center">
-                <MapPin className="w-6 h-6" strokeWidth={1.5} />
-              </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">Find Food Near You</h3>
-              <p className="text-gray-600 leading-relaxed">
-                Discover available food donations near you with our interactive map. Find fresh meals and ingredients
-                in your local area with just a few taps.
-              </p>
-            </div>
-          </div>
-
-          {/* Feature 3 */}
-          <div 
-            ref={el => featureRefs.current[2] = el}
-            className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 relative overflow-hidden shadow-xl hover:shadow-2xl transition-shadow duration-300 group opacity-0"
-          >
-            <div className="absolute inset-0 bg-gradient-to-br from-green-50/30 to-emerald-50/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-            <div className="relative z-10">
-              <div className="w-14 h-14 mb-6 text-white bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl flex items-center justify-center">
-                <Users className="w-6 h-6" strokeWidth={1.5} />
-              </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">Donate Food</h3>
-              <p className="text-gray-600 leading-relaxed">
-                Make a difference by donating surplus food. Connect with local charities and community members
-                who can benefit from your contributions.
-              </p>
-            </div>
-          </div>
-
-          {/* Feature 4 */}
-          <div 
-            ref={el => featureRefs.current[3] = el}
-            className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 relative overflow-hidden shadow-xl hover:shadow-2xl transition-shadow duration-300 group md:col-span-2 lg:col-span-1 opacity-0"
-          >
-            <div className="absolute inset-0 bg-gradient-to-br from-green-50/30 to-emerald-50/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-            <div className="relative z-10">
-              <div className="w-14 h-14 mb-6 text-white bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl flex items-center justify-center">
-                <HeartHandshake className="w-6 h-6" strokeWidth={1.5} />
-              </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">Get Started</h3>
-              <p className="text-gray-600 leading-relaxed">
-                Join our community of food heroes today. Whether you're donating or looking for food, our platform
-                makes it easy to connect and make an impact.
-              </p>
-            </div>
-          </div>
-
-          {/* Feature 5 */}
-          <div 
-            ref={el => featureRefs.current[4] = el}
-            className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 relative overflow-hidden shadow-xl hover:shadow-2xl transition-shadow duration-300 group md:col-span-2 lg:col-span-2 opacity-0"
-          >
-            <div className="absolute inset-0 bg-gradient-to-br from-green-50/30 to-emerald-50/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-            <div className="relative z-10">
-              <div className="w-14 h-14 mb-6 text-white bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl flex items-center justify-center">
-                <Leaf className="w-6 h-6" strokeWidth={1.5} />
-              </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">Community Impact</h3>
-              <p className="text-gray-600 leading-relaxed">
-                Be part of a movement that fights food waste and hunger. Track your impact and see how your
-                contributions help build a more sustainable and caring community.
-              </p>
+            <h3 className="text-2xl font-bold text-gray-800 mb-3">Donation Requesting System</h3>
+            <p className="text-gray-500 leading-relaxed mb-6">
+              Browse available food donations and make requests. Our platform ensures a fair and efficient distribution of resources to the community.
+            </p>
+            <div className="mt-6 rounded-lg overflow-hidden border border-gray-200/80">
+              <video
+                ref={videoRef2}
+                src="/food-listings.mp4"
+                poster="/images/feature-requesting.png"
+                loop
+                muted
+                playsInline
+                preload="metadata"
+                className="w-full h-auto object-cover"
+              />
             </div>
           </div>
         </div>

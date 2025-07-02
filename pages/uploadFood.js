@@ -1,10 +1,14 @@
 import { useState, useRef, useEffect } from 'react';
+import toast from 'react-hot-toast';
+import Lottie from 'lottie-react';
+import confettiAnimation from '../public/animations/confetti.json';
 import Head from 'next/head';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { LoadScript, Autocomplete } from '@react-google-maps/api';
+import { useLoadScript, GoogleMap, Marker, Autocomplete } from '@react-google-maps/api';
 
 export default function UploadFood() {
+  console.log('--- Loading latest version of uploadFood.js ---');
   const [formData, setFormData] = useState({
     name: '',
     foodType: '',
@@ -16,38 +20,42 @@ export default function UploadFood() {
   const [image, setImage] = useState(null);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
-  const [map, setMap] = useState(null);
-  const [marker, setMarker] = useState(null);
   const [userLocation, setUserLocation] = useState(null);
-  const [isScriptLoaded, setIsScriptLoaded] = useState(false);
+  const [markerPosition, setMarkerPosition] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
   const fileInputRef = useRef(null);
   const dropAreaRef = useRef(null);
   const autocompleteRef = useRef(null);
 
-  useEffect(() => {
-    // Check if window is defined (client-side)
-    if (typeof window !== 'undefined' && !window.google) {
-      const script = document.createElement('script');
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places`;
-      script.async = true;
-      script.id = 'google-maps-script';
-      script.onload = () => {
-        setIsScriptLoaded(true);
-        if (initMap) initMap();
-      };
-      document.body.appendChild(script);
+  const { isLoaded, loadError } = useLoadScript({
+    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
+    libraries: ['places'],
+  });
 
-      return () => {
-        const scriptElement = document.getElementById('google-maps-script');
-        if (scriptElement) {
-          document.body.removeChild(scriptElement);
+  useEffect(() => {
+    if (isLoaded) {
+      // Get user's initial location
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const location = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+          };
+          setUserLocation(location);
+          setMarkerPosition(location);
+          updateLocationAddress(location);
+        },
+        () => {
+          // Default to Singapore if geolocation fails
+          const defaultLocation = { lat: 1.3521, lng: 103.8198 };
+          setUserLocation(defaultLocation);
+          setMarkerPosition(defaultLocation);
+          updateLocationAddress(defaultLocation);
         }
-      };
-    } else {
-      setIsScriptLoaded(true);
+      );
     }
-  }, []);
+  }, [isLoaded]); // Runs when isLoaded changes
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -69,12 +77,8 @@ export default function UploadFood() {
           lat: place.geometry.location.lat(),
           lng: place.geometry.location.lng()
         };
-        
-        // Update map and marker
-        if (map && marker) {
-          map.setCenter(location);
-          marker.setPosition(location);
-        }
+        setUserLocation(location); // Update map center
+        setMarkerPosition(location); // Update marker position
         
         // Update form data with formatted address
         setFormData(prev => ({
@@ -174,7 +178,9 @@ export default function UploadFood() {
       const result = await response.json();
 
       if (result.success) {
-        setMessage('Food item added successfully!');
+        toast.success('Food item added successfully!');
+        setShowConfetti(true);
+        setTimeout(() => setShowConfetti(false), 3000); // Hide confetti after 3 seconds
         // Reset form
         setFormData({
           name: '',
@@ -198,62 +204,7 @@ export default function UploadFood() {
     }
   };
 
-  const initMap = () => {
-    if (typeof window !== 'undefined') {
-      // Get user location
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const location = {
-            lat: position.coords.latitude,
-            lng: position.coords.longitude
-          };
-          setUserLocation(location);
-          
-          // Initialize map
-          const mapInstance = new window.google.maps.Map(document.getElementById('map'), {
-            center: location,
-            zoom: 15
-          });
-          setMap(mapInstance);
-          
-          // Add marker
-          const newMarker = new window.google.maps.Marker({
-            position: location,
-            map: mapInstance,
-            draggable: true
-          });
-          setMarker(newMarker);
-          
-          // Update location address when marker is dragged
-          newMarker.addListener('dragend', () => {
-            updateLocationAddress(newMarker.getPosition());
-          });
-        },
-        () => {
-          // Default to Singapore if geolocation fails
-          const defaultLocation = { lat: 1.3521, lng: 103.8198 };
-          setUserLocation(defaultLocation);
-          
-          const mapInstance = new window.google.maps.Map(document.getElementById('map'), {
-            center: defaultLocation,
-            zoom: 12
-          });
-          setMap(mapInstance);
-          
-          const newMarker = new window.google.maps.Marker({
-            position: defaultLocation,
-            map: mapInstance,
-            draggable: true
-          });
-          setMarker(newMarker);
-          
-          newMarker.addListener('dragend', () => {
-            updateLocationAddress(newMarker.getPosition());
-          });
-        }
-      );
-    }
-  };
+
   
   const updateLocationAddress = (latLng) => {
     if (window.google && window.google.maps) {
@@ -269,24 +220,7 @@ export default function UploadFood() {
     }
   };
 
-  const handleAddressSearch = (address) => {
-    if (window.google && window.google.maps && map) {
-      const geocoder = new window.google.maps.Geocoder();
-      geocoder.geocode({ address }, (results, status) => {
-        if (status === 'OK' && results[0]) {
-          // Move marker to new location
-          marker.setPosition(results[0].geometry.location);
-          map.setCenter(results[0].geometry.location);
-          
-          // Update form data with formatted address
-          setFormData(prev => ({
-            ...prev,
-            locationAddress: results[0].formatted_address
-          }));
-        }
-      });
-    }
-  };
+
 
   return (
     <>
@@ -296,6 +230,11 @@ export default function UploadFood() {
       </Head>
 
       <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+        {showConfetti && (
+          <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center z-50 pointer-events-none">
+            <Lottie animationData={confettiAnimation} loop={false} />
+          </div>
+        )}
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-10">
             <h1 className="text-4xl font-bold text-gray-900">List Your Surplus Food</h1>
@@ -390,52 +329,7 @@ export default function UploadFood() {
                   </div>
                 </div>
 
-                {/* Location Address */}
-                <div className="relative">
-                  {isScriptLoaded ? (
-                    <Autocomplete
-                      onLoad={onLoad}
-                      onPlaceChanged={onPlaceChanged}
-                      options={{
-                        types: ['geocode', 'establishment'],
-                        componentRestrictions: { country: 'my' },
-                        fields: ['formatted_address', 'geometry', 'name']
-                      }}
-                    >
-                      <div className="bg-green-50 rounded-md p-4 border border-green-100">
-                        <input
-                          id="locationAddress"
-                          name="locationAddress"
-                          type="text"
-                          required
-                          value={formData.locationAddress}
-                          onChange={handleInputChange}
-                          className="w-full bg-transparent text-gray-700 focus:outline-none"
-                          placeholder="Search for a location or address"
-                        />
-                        <div className="absolute right-3 top-3 text-gray-400">
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
-                          </svg>
-                        </div>
-                      </div>
-                    </Autocomplete>
-                  ) : (
-                    <div className="bg-green-50 rounded-md p-4 border border-green-100">
-                      <input
-                        id="locationAddress"
-                        name="locationAddress"
-                        type="text"
-                        required
-                        value={formData.locationAddress}
-                        onChange={handleInputChange}
-                        className="w-full bg-transparent text-gray-700 focus:outline-none"
-                        placeholder="Loading map..."
-                        disabled
-                      />
-                    </div>
-                  )}
-                </div>
+
 
                 {/* Food Name */}
                 <div>
@@ -551,18 +445,58 @@ export default function UploadFood() {
             </form>
             </div>
             
-            {/* Right column - Map */}
+            {/* Right column - Map and location */}
             <div className="lg:w-1/2">
-              <div id="map" className="w-full h-96 rounded-lg shadow-lg" />
+              <div className="bg-green-50 rounded-md p-4 border border-green-100 h-full flex flex-col">
+                <h3 className="text-lg font-semibold text-gray-800 mb-3">Set Location</h3>
+                {isLoaded ? (
+                  <>
+                    <div className="mb-4">
+                      <Autocomplete
+                        onLoad={onLoad}
+                        onPlaceChanged={onPlaceChanged}
+                      >
+                        <input
+                          type="text"
+                          placeholder="Enter location or drag the marker"
+                          className="w-full bg-white text-gray-700 p-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500"
+                          defaultValue={formData.locationAddress}
+                        />
+                      </Autocomplete>
+                    </div>
+                    <div className="h-96 rounded-md flex-grow" style={{ minHeight: '300px' }}>
+                      {userLocation && (
+                        <GoogleMap
+                          mapContainerStyle={{ width: '100%', height: '100%', borderRadius: '0.375rem' }}
+                          center={userLocation}
+                          zoom={15}
+                        >
+                          {markerPosition && (
+                            <Marker
+                              position={markerPosition}
+                              draggable={true}
+                              onDragEnd={(e) => {
+                                const newPos = { lat: e.latLng.lat(), lng: e.latLng.lng() };
+                                setMarkerPosition(newPos);
+                                updateLocationAddress(newPos);
+                              }}
+                            />
+                          )}
+                        </GoogleMap>
+                      )}
+                    </div>
+                  </>
+                ) : loadError ? (
+                  <div>Error loading maps. Please try again later.</div>
+                ) : (
+                  <div className="flex items-center justify-center h-full text-gray-500">Loading Map...</div>
+                )}
+              </div>
             </div>
           </div>
         </div>
       </div>
-      <style jsx global>{`
-        #map {
-          min-height: 400px;
-        }
-      `}</style>
+
     </>
   );
 }

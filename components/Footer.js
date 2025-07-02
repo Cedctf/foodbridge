@@ -4,7 +4,7 @@ import Image from 'next/image';
 export default function Footer() {
   const currentYear = new Date().getFullYear();
   
-  return (
+  return (  
     <footer className="bg-white py-8 px-6 border-t border-gray-200">
       <div className="max-w-6xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">

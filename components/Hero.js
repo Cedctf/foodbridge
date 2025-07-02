@@ -1,8 +1,10 @@
+import React from 'react';
 import Link from "next/link";
+import CircularText from './CircularText';
 
 export default function Hero() {
   return (
-    <section className="relative pt-16 pb-20 px-4 sm:px-6 lg:px-8 min-h-screen flex items-center">
+    <section className="relative pt-16 pb-20 px-4 sm:px-6 lg:px-8 min-h-screen flex items-center mb-3">
       <div className="relative max-w-7xl mx-auto w-full">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* Hero Content */}
@@ -22,7 +24,7 @@ export default function Hero() {
               </p>
             </div>
 
-            {/* CTA Buttons */}
+            {/* CTA Buttons
             <div className="flex flex-col sm:flex-row gap-4">
               <Link href="/foodListing" className="group bg-gradient-to-r from-green-500 to-emerald-600 text-white px-6 py-3 rounded-full text-base font-semibold hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex items-center justify-center">
                 Explore Available Food
@@ -33,7 +35,7 @@ export default function Hero() {
               <Link href="/uploadFood" className="bg-white text-green-600 border-2 border-green-500 px-6 py-3 rounded-full text-base font-semibold hover:bg-green-50 transition-all duration-300 transform hover:scale-105 flex items-center justify-center">
                 Share Your Food
               </Link>
-            </div>
+            </div> */}
 
             {/* Stats */}
             {/* <div className="grid grid-cols-3 gap-8 pt-8">
@@ -65,8 +67,19 @@ export default function Hero() {
                     <source src="/Intro.mp4" type="video/mp4" />
                     Your browser does not support the video tag.
                   </video>
+                  
+
                 </div>
               </div>
+        </div>
+        {/* Circular Text Animation */}
+        <div className="absolute top-90 left-285 z-10">
+          <CircularText 
+            text="FOODBRIDGE • SHARE • CONNECT • " 
+            spinDuration={15}
+            onHover="speedUp"
+            className="text-white drop-shadow-lg bg-green-500/20 backdrop-blur-sm"
+          />
         </div>
       </div>
 
