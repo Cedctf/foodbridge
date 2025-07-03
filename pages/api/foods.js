@@ -130,11 +130,11 @@ export default async function handler(req, res) {
               };
             }
             
-            // Update impact metrics
+            // Update impact metrics - only increment mealsProvided and foodSaved when donating
+            // recipientsHelped will be incremented when someone actually claims the food
             const newMealsProvided = (userImpact.mealsProvided || 0) + parseInt(quantity);
             const randomFoodSaved = Math.floor(Math.random() * 10) + 1; // Random 1-10 lbs
             const newFoodSavedLbs = (userImpact.foodSavedLbs || 0) + randomFoodSaved;
-            const newRecipientsHelped = (userImpact.recipientsHelped || 0) + 1;
             
             // Update or insert impact data
             await impactCollection.updateOne(
@@ -143,7 +143,6 @@ export default async function handler(req, res) {
                 $set: {
                   mealsProvided: newMealsProvided,
                   foodSavedLbs: newFoodSavedLbs,
-                  recipientsHelped: newRecipientsHelped,
                   updatedAt: new Date()
                 }
               },
@@ -222,8 +221,12 @@ export default async function handler(req, res) {
         }
       }
 
-      // If no ID provided, return all food items
-      const foods = await foodCollection.find({}).toArray();
+      // If no ID provided, return all available food items (exclude claimed items)
+      const query = req.query.includeAll === 'true' 
+        ? {} // Return all items if explicitly requested (for admin/donor views)
+        : { $or: [{ status: { $ne: 'claimed' } }, { status: { $exists: false } }] }; // Exclude claimed items
+      
+      const foods = await foodCollection.find(query).sort({ createdAt: -1 }).toArray();
       res.status(200).json({
         success: true,
         data: foods

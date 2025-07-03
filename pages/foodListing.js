@@ -3,6 +3,7 @@ import Head from 'next/head';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { Geist } from 'next/font/google';
+import { useUser } from '../contexts/UserContext';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -11,6 +12,7 @@ const geistSans = Geist({
 
 export default function FoodListing() {
   const router = useRouter();
+  const { user, isAuthenticated } = useUser();
   const [foods, setFoods] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -19,6 +21,7 @@ export default function FoodListing() {
   const [sortBy, setSortBy] = useState('newest');
   const [userRequests, setUserRequests] = useState([]);
   const [notification, setNotification] = useState(null);
+  const [requestsLoading, setRequestsLoading] = useState(false);
 
   useEffect(() => {
     fetchFoods();
@@ -33,11 +36,20 @@ export default function FoodListing() {
     return () => window.removeEventListener('focus', handleFocus);
   }, []);
 
+  // Reload requests when user authentication status changes
+  useEffect(() => {
+    loadUserRequests();
+  }, [isAuthenticated, user]);
+
   // Separate useEffect to handle router query changes
   useEffect(() => {
     // Check if redirected from successful request submission
     if (router.query.requestSuccess === 'true') {
-      showNotification('Request submitted successfully! 🎉', 'success');
+      showNotification('Request automatically approved! You can contact the donor. 🎉', 'success');
+      
+      // Refresh both food list and user requests to reflect the changes
+      fetchFoods();
+      loadUserRequests();
       
       // Clean up URL parameter using Next.js router
       const { requestSuccess, ...restQuery } = router.query;
@@ -48,9 +60,50 @@ export default function FoodListing() {
     }
   }, [router.query.requestSuccess]);
 
-  const loadUserRequests = () => {
-    const requests = JSON.parse(localStorage.getItem('userRequests') || '[]');
-    setUserRequests(requests);
+  const loadUserRequests = async () => {
+    setRequestsLoading(true);
+    try {
+      let requests = [];
+      
+      if (isAuthenticated && user?.id) {
+        // Fetch requests from API for authenticated users
+        const response = await fetch(`/api/requests?userId=${user.id}`);
+        const result = await response.json();
+        
+        if (result.success) {
+          requests = result.data || [];
+        } else {
+          console.error('Failed to fetch user requests from API:', result.message);
+        }
+      } else {
+        // For non-authenticated users, still check localStorage as fallback
+        const localRequests = JSON.parse(localStorage.getItem('userRequests') || '[]');
+        
+        // Convert localStorage format to match API format
+        requests = await Promise.all(
+          localRequests.map(async (localRequest) => {
+            try {
+              const response = await fetch(`/api/requests?id=${localRequest.requestId}`);
+              const result = await response.json();
+              return result.success ? result.data : null;
+            } catch (error) {
+              console.error('Error fetching individual request:', error);
+              return null;
+            }
+          })
+        );
+        requests = requests.filter(request => request !== null);
+      }
+      
+      setUserRequests(requests);
+    } catch (error) {
+      console.error('Error loading user requests:', error);
+      // Fallback to localStorage for any errors
+      const localRequests = JSON.parse(localStorage.getItem('userRequests') || '[]');
+      setUserRequests(localRequests);
+    } finally {
+      setRequestsLoading(false);
+    }
   };
 
   const fetchFoods = async () => {
@@ -98,7 +151,14 @@ export default function FoodListing() {
   };
 
   const hasUserRequested = (foodId) => {
-    return userRequests.some(request => request.foodId === foodId);
+    if (isAuthenticated && user?.id) {
+      // For authenticated users, check by foodId in the requests array
+      return userRequests.some(request => request.foodId === foodId);
+    } else {
+      // For non-authenticated users, check localStorage format
+      const localRequests = JSON.parse(localStorage.getItem('userRequests') || '[]');
+      return localRequests.some(request => request.foodId === foodId);
+    }
   };
 
   const showNotification = (message, type = 'info') => {
@@ -106,16 +166,43 @@ export default function FoodListing() {
     setTimeout(() => setNotification(null), 3000);
   };
 
-  const handleContactClick = (food) => {
+  const handleContactClick = async (food) => {
     if (hasUserRequested(food._id)) {
       showNotification('You have already requested this food listing.', 'warning');
       return;
     }
     
-    router.push({
-      pathname: '/request',
-      query: { foodId: food._id }
-    });
+    // Quick check if item is still available before redirecting
+    try {
+      const response = await fetch(`/api/foods?id=${food._id}`);
+      const result = await response.json();
+      
+      if (!result.success) {
+        showNotification('This food item is no longer available.', 'warning');
+        fetchFoods(); // Refresh the list
+        return;
+      }
+      
+      const freshFoodData = result.data;
+      if (freshFoodData.status === 'claimed') {
+        showNotification('This food item has just been claimed by another user.', 'warning');
+        fetchFoods(); // Refresh the list
+        return;
+      }
+      
+      // Item is still available, proceed to request page
+      router.push({
+        pathname: '/request',
+        query: { foodId: food._id }
+      });
+    } catch (error) {
+      console.error('Error checking food availability:', error);
+      // On error, still allow proceeding - the request API will handle conflicts
+      router.push({
+        pathname: '/request',
+        query: { foodId: food._id }
+      });
+    }
   };
 
   const filteredAndSortedFoods = foods
@@ -183,7 +270,7 @@ export default function FoodListing() {
                    </svg>
                  ) : (
                    <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
-                     <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                     <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 002 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
                    </svg>
                  )}
                </div>
@@ -214,7 +301,27 @@ export default function FoodListing() {
                 </h1>
                 <p className="text-gray-600 mt-1">
                   {filteredAndSortedFoods.length} items available
+                  {requestsLoading && (
+                    <span className="ml-2 text-green-600 text-sm">
+                      • Syncing requests...
+                    </span>
+                  )}
                 </p>
+              </div>
+              <div className="mt-4 md:mt-0">
+                <button
+                  onClick={() => {
+                    fetchFoods();
+                    loadUserRequests();
+                    showNotification('Refreshing latest available items...', 'info');
+                  }}
+                  className="inline-flex items-center px-4 py-2 border border-green-300 rounded-md shadow-sm text-sm font-medium text-green-700 bg-white hover:bg-green-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                >
+                  <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                  </svg>
+                  Refresh
+                </button>
               </div>
             </div>
           </div>

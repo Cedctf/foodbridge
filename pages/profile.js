@@ -4,9 +4,15 @@ import Head from 'next/head';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 
-function getStatus(expiryDate) {
+function getStatus(food) {
+  // Check if food is claimed first
+  if (food.status === 'claimed') {
+    return { label: 'Claimed', color: 'bg-[#CCE6FF] text-[#2B6CB0]' };
+  }
+  
+  // Check expiry status for available items
   const now = new Date();
-  const expiry = new Date(expiryDate);
+  const expiry = new Date(food.expiryDate);
   if (expiry < now) return { label: 'Expired', color: 'bg-[#FFDCDC] text-[#E53E3E]' };
   return { label: 'Available', color: 'bg-[#E6F5ED] text-[#38A169]' };
 }
@@ -61,7 +67,8 @@ export default function Profile() {
         setDonationsLoading(true);
         setDonationsError('');
         try {
-          const res = await fetch('/api/foods');
+          // Include all items (including claimed) for the donor's own dashboard
+          const res = await fetch('/api/foods?includeAll=true');
           const data = await res.json();
           if (data.success) {
             // Only show donations by the current user
@@ -333,9 +340,9 @@ export default function Profile() {
                         </td>
                       </tr>
                     ) : (
-                      donations.slice(0, 10).map((donation, idx) => {
-                        const status = getStatus(donation.expiryDate);
-                        const isLast = idx === Math.min(donations.length, 10) - 1;
+                                          donations.slice(0, 10).map((donation, idx) => {
+                      const status = getStatus(donation);
+                      const isLast = idx === Math.min(donations.length, 10) - 1;
                         return (
                           <tr
                             key={donation._id || idx}

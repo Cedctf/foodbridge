@@ -138,17 +138,23 @@ export default function RequestPage() {
       const result = await response.json();
 
       if (result.success) {
-        alert('Request submitted successfully! The donor will be notified.');
+        const message = result.data.autoApproved 
+          ? '🎉 Request automatically approved! You can now contact the donor for pickup details.'
+          : 'Request submitted successfully! The donor will be notified.';
+        
+        alert(message);
         console.log('Request created with ID:', result.data.requestId);
         
-        // Store the request in localStorage for tracking
-        const existingRequests = JSON.parse(localStorage.getItem('userRequests') || '[]');
-        existingRequests.push({
-          foodId: foodData._id,
-          requestId: result.data.requestId,
-          timestamp: new Date().toISOString()
-        });
-        localStorage.setItem('userRequests', JSON.stringify(existingRequests));
+        // Only store in localStorage for non-authenticated users as fallback
+        if (!isAuthenticated || !user?.id) {
+          const existingRequests = JSON.parse(localStorage.getItem('userRequests') || '[]');
+          existingRequests.push({
+            foodId: foodData._id,
+            requestId: result.data.requestId,
+            timestamp: new Date().toISOString()
+          });
+          localStorage.setItem('userRequests', JSON.stringify(existingRequests));
+        }
         
         // Redirect to food listing page with success parameter
         setTimeout(() => {

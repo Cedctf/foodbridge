@@ -1,4 +1,4 @@
-import { getRequestCollection } from './database';
+import { getRequestCollection, getFoodCollection, getImpactCollection } from './database';
 
 export default async function handler(req, res) {
   if (req.method === 'POST') {
@@ -23,7 +23,50 @@ export default async function handler(req, res) {
         });
       }
 
-      // Prepare request data
+      const requestCollection = await getRequestCollection();
+      const foodCollection = await getFoodCollection();
+
+      // Check if this food item exists and is still available
+      const { ObjectId } = require('mongodb');
+      const foodItem = await foodCollection.findOne({ _id: new ObjectId(foodId) });
+      
+      if (!foodItem) {
+        return res.status(404).json({
+          success: false,
+          message: 'Food item not found'
+        });
+      }
+
+      // Check if this food item already has an approved request (is claimed)
+      const existingApprovedRequest = await requestCollection.findOne({ 
+        foodId: foodId,
+        status: 'approved'
+      });
+
+      if (existingApprovedRequest) {
+        return res.status(409).json({
+          success: false,
+          message: 'This food item has already been claimed by another user'
+        });
+      }
+
+      // Check if this user has already requested this food item
+      const userExistingRequest = await requestCollection.findOne({
+        foodId: foodId,
+        $or: [
+          { userId: userId },
+          { requesterEmail: requesterEmail.trim() }
+        ]
+      });
+
+      if (userExistingRequest) {
+        return res.status(409).json({
+          success: false,
+          message: 'You have already requested this food item'
+        });
+      }
+
+      // AUTO-APPROVAL LOGIC: First requester gets automatically approved
       const requestItem = {
         foodId: foodId.trim(),
         userId: userId || null,
@@ -31,21 +74,53 @@ export default async function handler(req, res) {
         requesterEmail: requesterEmail.trim(),
         requesterPhone: requesterPhone ? requesterPhone.trim() : '',
         message: message ? message.trim() : '',
-        status: 'pending', // pending, approved, rejected, completed
+        status: 'approved', // AUTO-APPROVE first request
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
+        approvedAt: new Date() // Track when it was approved
       };
 
-      // Save to MongoDB
-      const requestCollection = await getRequestCollection();
+      // Save the approved request to MongoDB
       const result = await requestCollection.insertOne(requestItem);
 
       if (result.insertedId) {
+        // Mark the food item as claimed in the database
+        await foodCollection.updateOne(
+          { _id: new ObjectId(foodId) },
+          { 
+            $set: { 
+              status: 'claimed',
+              claimedAt: new Date(),
+              claimedBy: result.insertedId
+            }
+          }
+        );
+
+        // Update donor's impact - increment recipients helped
+        if (foodItem.userId) {
+          try {
+            const impactCollection = await getImpactCollection();
+            await impactCollection.updateOne(
+              { userId: foodItem.userId },
+              {
+                $inc: { recipientsHelped: 1 },
+                $set: { updatedAt: new Date() }
+              },
+              { upsert: true }
+            );
+          } catch (impactError) {
+            console.error('Error updating donor impact:', impactError);
+            // Don't fail the main operation if impact update fails
+          }
+        }
+
         res.status(201).json({
           success: true,
-          message: 'Request submitted successfully',
+          message: 'Request automatically approved! You can now contact the donor.',
           data: {
             requestId: result.insertedId,
+            status: 'approved',
+            autoApproved: true,
             ...requestItem
           }
         });
