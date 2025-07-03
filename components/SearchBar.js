@@ -69,11 +69,10 @@ const SearchBar = ({ onPlaceSelect, autocompleteRef }) => {
               width: '100%',
               padding: '12px 16px 12px 40px',
               fontSize: '14px',
-              border: '1px solid #d1d5db',
-              borderRadius: '8px',
+              border: 'none',
+              borderRadius: '30px',
               outline: 'none',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-              backgroundColor: 'transparent',
+              backgroundColor: 'white',
               color: '#374151'
             }}
             onFocus={(e) => {
