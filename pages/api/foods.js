@@ -221,10 +221,22 @@ export default async function handler(req, res) {
         }
       }
 
-      // If no ID provided, return all available food items (exclude claimed items)
-      const query = req.query.includeAll === 'true' 
-        ? {} // Return all items if explicitly requested (for admin/donor views)
-        : { $or: [{ status: { $ne: 'claimed' } }, { status: { $exists: false } }] }; // Exclude claimed items
+      // If no ID provided, return all available food items (exclude claimed and expired items)
+      const now = new Date();
+      
+      let query;
+      if (req.query.includeAll === 'true') {
+        // Return all items if explicitly requested (for admin/donor views)
+        query = {};
+      } else {
+        // Exclude claimed items AND expired items for public listings
+        query = {
+          $and: [
+            { $or: [{ status: { $ne: 'claimed' } }, { status: { $exists: false } }] }, // Not claimed
+            { expiryDate: { $gte: now } } // Not expired
+          ]
+        };
+      }
       
       const foods = await foodCollection.find(query).sort({ createdAt: -1 }).toArray();
       res.status(200).json({

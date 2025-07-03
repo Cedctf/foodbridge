@@ -5,15 +5,17 @@ import Link from 'next/link';
 import { useState, useEffect } from 'react';
 
 function getStatus(food) {
-  // Check if food is claimed first
+  // Check expiry status first (most important)
+  const now = new Date();
+  const expiry = new Date(food.expiryDate);
+  if (expiry < now) return { label: 'Expired', color: 'bg-[#FFDCDC] text-[#E53E3E]' };
+  
+  // Check if food is claimed
   if (food.status === 'claimed') {
     return { label: 'Claimed', color: 'bg-[#CCE6FF] text-[#2B6CB0]' };
   }
   
-  // Check expiry status for available items
-  const now = new Date();
-  const expiry = new Date(food.expiryDate);
-  if (expiry < now) return { label: 'Expired', color: 'bg-[#FFDCDC] text-[#E53E3E]' };
+  // Available and not expired
   return { label: 'Available', color: 'bg-[#E6F5ED] text-[#38A169]' };
 }
 

@@ -32,8 +32,20 @@ export default function FoodListing() {
       loadUserRequests();
     };
 
+    // Auto-refresh expired items every 5 minutes to keep listings current
+    const intervalId = setInterval(() => {
+      fetchFoods();
+      // Optional: Show subtle notification that listings were refreshed
+      if (foods.length > 0) {
+        showNotification('Listings refreshed - expired items removed', 'info');
+      }
+    }, 5 * 60 * 1000); // 5 minutes
+
     window.addEventListener('focus', handleFocus);
-    return () => window.removeEventListener('focus', handleFocus);
+    return () => {
+      window.removeEventListener('focus', handleFocus);
+      clearInterval(intervalId);
+    };
   }, []);
 
   // Reload requests when user authentication status changes
