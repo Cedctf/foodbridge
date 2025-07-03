@@ -302,7 +302,7 @@ export default function UploadFood() {
                         }));
                       }}
                       className="w-full bg-transparent text-gray-700 focus:outline-none"
-                      placeholderText="Expiry Date (MM/DD/YYYY)"
+                      placeholderText="Expiry Date (MM/DD/YYYY) "
                       dateFormat="MM/dd/yyyy"
                       minDate={new Date()}
                       showMonthDropdown

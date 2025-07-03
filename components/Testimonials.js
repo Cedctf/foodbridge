@@ -52,7 +52,7 @@ export default function Testimonials() {
   return (
     <div className="relative">
       <TestimonialsSection
-        title="See what our users are saying about FoodBridge! !"
+        title="See what our users are saying about FoodBridge!!"
        
         testimonials={testimonials}
       />
