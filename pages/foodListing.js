@@ -3,6 +3,7 @@ import Head from 'next/head';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { Geist } from 'next/font/google';
+import { useUser } from '../contexts/UserContext';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -11,6 +12,7 @@ const geistSans = Geist({
 
 export default function FoodListing() {
   const router = useRouter();
+  const { user, isAuthenticated } = useUser();
   const [foods, setFoods] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -19,6 +21,7 @@ export default function FoodListing() {
   const [sortBy, setSortBy] = useState('newest');
   const [userRequests, setUserRequests] = useState([]);
   const [notification, setNotification] = useState(null);
+  const [requestsLoading, setRequestsLoading] = useState(false);
 
   useEffect(() => {
     fetchFoods();
@@ -29,15 +32,36 @@ export default function FoodListing() {
       loadUserRequests();
     };
 
+    // Auto-refresh expired items every 5 minutes to keep listings current
+    const intervalId = setInterval(() => {
+      fetchFoods();
+      // Optional: Show subtle notification that listings were refreshed
+      if (foods.length > 0) {
+        showNotification('Listings refreshed - expired items removed', 'info');
+      }
+    }, 5 * 60 * 1000); // 5 minutes
+
     window.addEventListener('focus', handleFocus);
-    return () => window.removeEventListener('focus', handleFocus);
+    return () => {
+      window.removeEventListener('focus', handleFocus);
+      clearInterval(intervalId);
+    };
   }, []);
+
+  // Reload requests when user authentication status changes
+  useEffect(() => {
+    loadUserRequests();
+  }, [isAuthenticated, user]);
 
   // Separate useEffect to handle router query changes
   useEffect(() => {
     // Check if redirected from successful request submission
     if (router.query.requestSuccess === 'true') {
-      showNotification('Request submitted successfully! 🎉', 'success');
+      showNotification('Request automatically approved! You can contact the donor. 🎉', 'success');
+      
+      // Refresh both food list and user requests to reflect the changes
+      fetchFoods();
+      loadUserRequests();
       
       // Clean up URL parameter using Next.js router
       const { requestSuccess, ...restQuery } = router.query;
@@ -48,9 +72,50 @@ export default function FoodListing() {
     }
   }, [router.query.requestSuccess]);
 
-  const loadUserRequests = () => {
-    const requests = JSON.parse(localStorage.getItem('userRequests') || '[]');
-    setUserRequests(requests);
+  const loadUserRequests = async () => {
+    setRequestsLoading(true);
+    try {
+      let requests = [];
+      
+      if (isAuthenticated && user?.id) {
+        // Fetch requests from API for authenticated users
+        const response = await fetch(`/api/requests?userId=${user.id}`);
+        const result = await response.json();
+        
+        if (result.success) {
+          requests = result.data || [];
+        } else {
+          console.error('Failed to fetch user requests from API:', result.message);
+        }
+      } else {
+        // For non-authenticated users, still check localStorage as fallback
+        const localRequests = JSON.parse(localStorage.getItem('userRequests') || '[]');
+        
+        // Convert localStorage format to match API format
+        requests = await Promise.all(
+          localRequests.map(async (localRequest) => {
+            try {
+              const response = await fetch(`/api/requests?id=${localRequest.requestId}`);
+              const result = await response.json();
+              return result.success ? result.data : null;
+            } catch (error) {
+              console.error('Error fetching individual request:', error);
+              return null;
+            }
+          })
+        );
+        requests = requests.filter(request => request !== null);
+      }
+      
+      setUserRequests(requests);
+    } catch (error) {
+      console.error('Error loading user requests:', error);
+      // Fallback to localStorage for any errors
+      const localRequests = JSON.parse(localStorage.getItem('userRequests') || '[]');
+      setUserRequests(localRequests);
+    } finally {
+      setRequestsLoading(false);
+    }
   };
 
   const fetchFoods = async () => {
@@ -98,7 +163,14 @@ export default function FoodListing() {
   };
 
   const hasUserRequested = (foodId) => {
-    return userRequests.some(request => request.foodId === foodId);
+    if (isAuthenticated && user?.id) {
+      // For authenticated users, check by foodId in the requests array
+      return userRequests.some(request => request.foodId === foodId);
+    } else {
+      // For non-authenticated users, check localStorage format
+      const localRequests = JSON.parse(localStorage.getItem('userRequests') || '[]');
+      return localRequests.some(request => request.foodId === foodId);
+    }
   };
 
   const showNotification = (message, type = 'info') => {
@@ -106,16 +178,43 @@ export default function FoodListing() {
     setTimeout(() => setNotification(null), 3000);
   };
 
-  const handleContactClick = (food) => {
+  const handleContactClick = async (food) => {
     if (hasUserRequested(food._id)) {
       showNotification('You have already requested this food listing.', 'warning');
       return;
     }
     
-    router.push({
-      pathname: '/request',
-      query: { foodId: food._id }
-    });
+    // Quick check if item is still available before redirecting
+    try {
+      const response = await fetch(`/api/foods?id=${food._id}`);
+      const result = await response.json();
+      
+      if (!result.success) {
+        showNotification('This food item is no longer available.', 'warning');
+        fetchFoods(); // Refresh the list
+        return;
+      }
+      
+      const freshFoodData = result.data;
+      if (freshFoodData.status === 'claimed') {
+        showNotification('This food item has just been claimed by another user.', 'warning');
+        fetchFoods(); // Refresh the list
+        return;
+      }
+      
+      // Item is still available, proceed to request page
+      router.push({
+        pathname: '/request',
+        query: { foodId: food._id }
+      });
+    } catch (error) {
+      console.error('Error checking food availability:', error);
+      // On error, still allow proceeding - the request API will handle conflicts
+      router.push({
+        pathname: '/request',
+        query: { foodId: food._id }
+      });
+    }
   };
 
   const filteredAndSortedFoods = foods
