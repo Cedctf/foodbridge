@@ -1,3 +1,6 @@
+import "@/styles/globals.css";
+import { useState } from "react";
+import Chatbot from "../components/Chatbot";
 import '../styles/globals.css';
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
@@ -5,6 +8,8 @@ import { UserProvider } from "../contexts/UserContext";
 import { Toaster } from 'react-hot-toast';
 
 export default function App({ Component, pageProps }) {
+  const [showChatbot, setShowChatbot] = useState(false);
+
   return (
     <UserProvider>
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-emerald-50 text-gray-900 flex flex-col relative overflow-hidden">

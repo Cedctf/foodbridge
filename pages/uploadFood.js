@@ -3,6 +3,8 @@ import Head from 'next/head';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { LoadScript, Autocomplete } from '@react-google-maps/api';
+import { useRouter } from 'next/router';
+import { useAuth } from '../hooks/useAuth';
 
 export default function UploadFood() {
   const [formData, setFormData] = useState({
@@ -24,6 +26,8 @@ export default function UploadFood() {
   const fileInputRef = useRef(null);
   const dropAreaRef = useRef(null);
   const autocompleteRef = useRef(null);
+  const router = useRouter();
+  const { user, isAuthenticated } = useAuth();
 
   useEffect(() => {
     // Check if window is defined (client-side)
@@ -160,6 +164,10 @@ export default function UploadFood() {
       formDataToSend.append('expiryDate', formData.expiryDate);
       formDataToSend.append('description', formData.description || '');
       formDataToSend.append('locationAddress', formData.locationAddress);
+      // Add userId if authenticated
+      if (isAuthenticated && user && user.id) {
+        formDataToSend.append('userId', user.id);
+      }
       
       // Add image if selected
       if (image) {
@@ -187,6 +195,8 @@ export default function UploadFood() {
         setImage(null);
         // Reset file input
         document.getElementById('image').value = '';
+        // Redirect to food listing page
+        router.push('/foodListing');
       } else {
         setMessage(result.message || 'Failed to add food item');
       }

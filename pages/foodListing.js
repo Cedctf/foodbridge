@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import Head from 'next/head';
 import Image from 'next/image';
+import { useRouter } from 'next/router';
 import { Geist } from 'next/font/google';
 
 const geistSans = Geist({
@@ -9,16 +10,48 @@ const geistSans = Geist({
 });
 
 export default function FoodListing() {
+  const router = useRouter();
   const [foods, setFoods] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [searchFilter, setSearchFilter] = useState('');
   const [foodTypeFilter, setFoodTypeFilter] = useState('');
   const [sortBy, setSortBy] = useState('newest');
+  const [userRequests, setUserRequests] = useState([]);
+  const [notification, setNotification] = useState(null);
 
   useEffect(() => {
     fetchFoods();
+    loadUserRequests();
+
+    // Reload user requests when page regains focus (user comes back from other pages)
+    const handleFocus = () => {
+      loadUserRequests();
+    };
+
+    window.addEventListener('focus', handleFocus);
+    return () => window.removeEventListener('focus', handleFocus);
   }, []);
+
+  // Separate useEffect to handle router query changes
+  useEffect(() => {
+    // Check if redirected from successful request submission
+    if (router.query.requestSuccess === 'true') {
+      showNotification('Request submitted successfully! 🎉', 'success');
+      
+      // Clean up URL parameter using Next.js router
+      const { requestSuccess, ...restQuery } = router.query;
+      router.replace({
+        pathname: router.pathname,
+        query: restQuery
+      }, undefined, { shallow: true });
+    }
+  }, [router.query.requestSuccess]);
+
+  const loadUserRequests = () => {
+    const requests = JSON.parse(localStorage.getItem('userRequests') || '[]');
+    setUserRequests(requests);
+  };
 
   const fetchFoods = async () => {
     try {
@@ -62,6 +95,27 @@ export default function FoodListing() {
     if (daysLeft === 0) return { text: 'Expires today', color: 'text-orange-600 bg-orange-100' };
     if (daysLeft <= 3) return { text: `${daysLeft} days left`, color: 'text-yellow-600 bg-yellow-100' };
     return { text: `${daysLeft} days left`, color: 'text-green-600 bg-green-100' };
+  };
+
+  const hasUserRequested = (foodId) => {
+    return userRequests.some(request => request.foodId === foodId);
+  };
+
+  const showNotification = (message, type = 'info') => {
+    setNotification({ message, type });
+    setTimeout(() => setNotification(null), 3000);
+  };
+
+  const handleContactClick = (food) => {
+    if (hasUserRequested(food._id)) {
+      showNotification('You have already requested this food listing.', 'warning');
+      return;
+    }
+    
+    router.push({
+      pathname: '/request',
+      query: { foodId: food._id }
+    });
   };
 
   const filteredAndSortedFoods = foods
