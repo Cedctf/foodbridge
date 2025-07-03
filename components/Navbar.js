@@ -40,16 +40,16 @@ export default function Navbar() {
                   className="object-contain"
                 />
               </div>
-              <span className="text-2xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+              <span className="text-2xl font-bold text-[#45A180]">
                 FoodBridge
               </span>
             </Link>
           </div>
           <div className="hidden md:flex items-center space-x-8">
-            <Link href="/foodListing" className="text-gray-700 hover:text-green-600 transition-colors">Listings</Link>
-            <Link href="/map" className="text-gray-700 hover:text-green-600 transition-colors">Map</Link>
-            <Link href="/uploadFood" className="text-gray-700 hover:text-green-600 transition-colors">Donate</Link>
-            <Link href="/blog" className="text-gray-700 hover:text-green-600 transition-colors">Blog</Link>
+            <Link href="/foodListing" className="text-[#45A180] hover:text-[#378667] transition-colors">Listings</Link>
+            <Link href="/map" className="text-[#45A180] hover:text-[#378667] transition-colors">Map</Link>
+            <Link href="/uploadFood" className="text-[#45A180] hover:text-[#378667] transition-colors">Donate</Link>
+            <Link href="/blog" className="text-[#45A180] hover:text-[#378667] transition-colors">Blog</Link>
             
             <button 
               onClick={handleProfileClick}

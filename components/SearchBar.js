@@ -43,7 +43,7 @@ const SearchBar = ({ onPlaceSelect, autocompleteRef }) => {
               transform: 'translateY(-50%)',
               width: '16px',
               height: '16px',
-              color: '#9ca3af',
+              color: '#45A180',
               pointerEvents: 'none',
               zIndex: 1,
               borderRadius: '8px'
@@ -76,11 +76,9 @@ const SearchBar = ({ onPlaceSelect, autocompleteRef }) => {
               color: '#374151'
             }}
             onFocus={(e) => {
-              e.target.style.borderColor = '#3b82f6';
-              e.target.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.1)';
+              e.target.style.boxShadow = '0 0 0 3px rgba(69, 161, 128, 0.1)';
             }}
             onBlur={(e) => {
-              e.target.style.borderColor = '#d1d5db';
               e.target.style.boxShadow = '0 1px 3px rgba(0,0,0,0.1)';
             }}
           />

@@ -107,26 +107,24 @@ export default function FoodListing() {
         <meta name="description" content="Browse available food items in your community" />
       </Head>
 
-      <div className={`${geistSans.className} min-h-screen bg-gradient-to-br from-green-50 via-white to-emerald-50`}>
+      <div className={`${geistSans.className} min-h-screen bg-[#f7fcfa] pb-16`}>
         {/* Header */}
-        <div className="bg-white/80 backdrop-blur-sm shadow-sm">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-            <div className="md:flex md:items-center md:justify-between">
-              <div className="flex-1 min-w-0">
-                <h1 className="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl">
-                  Available Food Items
-                </h1>
-                <p className="text-gray-600 mt-1">
-                  {filteredAndSortedFoods.length} items available
-                </p>
-              </div>
+        <div className="pt-8">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div className="mb-4">
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                Available Food Items
+              </h1>
+              <p className="text-[#45A180]">
+                {filteredAndSortedFoods.length} items available
+              </p>
             </div>
           </div>
         </div>
 
         {/* Filters and Sort */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 text-gray-700">
-          <div className="max-w-3xl mx-auto mb-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-gray-700">
+          <div className="max-w-3xl mx-auto">
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                 <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -137,18 +135,18 @@ export default function FoodListing() {
                 type="text"
                 value={searchFilter}
                 onChange={(e) => setSearchFilter(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 border-0 text-base rounded-xl shadow-sm bg-green-50/80 focus:outline-none focus:ring-2 focus:ring-green-500"
+                className="w-full pl-12 pr-4 py-3 border-none text-[#45A180] rounded-xl shadow-sm bg-white focus:outline-none"
                 placeholder="Search by location or food type"
               />
             </div>
 
-            <div className="flex gap-3 mt-4">
+            <div className="flex gap-3 mt-3">
               <div className="flex-1">
                 <button
                   onClick={() => {}}
-                  className="w-full px-4 py-2 bg-green-50/80 rounded-lg border border-green-200 shadow-sm hover:bg-green-100/80 flex items-center justify-between"
+                  className="w-full px-4 py-2 bg-[#E5F5F0] rounded-lg shadow-sm hover:bg-[#d8efe8] flex items-center justify-between"
                 >
-                  <span className="text-gray-700">Location</span>
+                  <span className="text-black">Location</span>
                   <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                   </svg>
@@ -159,7 +157,7 @@ export default function FoodListing() {
                 <select
                   value={foodTypeFilter}
                   onChange={(e) => setFoodTypeFilter(e.target.value)}
-                  className="w-full px-4 py-2 bg-green-50/80 rounded-lg border border-green-200 shadow-sm hover:bg-green-100/80 appearance-none cursor-pointer"
+                  className="w-full px-4 py-2 bg-[#E5F5F0] rounded-lg shadow-sm hover:bg-[#d8efe8] appearance-none cursor-pointer text-black"
                 >
                   <option value="">Select food type</option>
                   <option value="Fruits">Fruits</option>
@@ -179,7 +177,7 @@ export default function FoodListing() {
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="w-full px-4 py-2 bg-green-50/80 rounded-lg border border-green-200 shadow-sm hover:bg-green-100/80 appearance-none cursor-pointer"
+                  className="w-full px-4 py-2 bg-[#E5F5F0] rounded-lg shadow-sm hover:bg-[#d8efe8] appearance-none cursor-pointer text-black"
                 >
                   <option value="expiry-soon">Expiry Date ↑</option>
                   <option value="expiry-later">Expiry Date ↓</option>
@@ -191,6 +189,8 @@ export default function FoodListing() {
             </div>
           </div>
 
+          <div className="h-6"></div>
+
           {/* Error Message */}
           {error && (
             <div className="bg-red-50 border border-red-200 rounded-md p-4 mb-6">
@@ -201,7 +201,7 @@ export default function FoodListing() {
           {/* Food Grid */}
           {filteredAndSortedFoods.length === 0 ? (
             <div className="text-center py-12">
-              <div className="text-gray-500 text-lg">
+              <div className="text-[#45A180] text-lg">
                 {searchFilter || foodTypeFilter ? 'No food items match your search.' : 'No food items available yet.'}
               </div>
               {!searchFilter && !foodTypeFilter && (
@@ -216,7 +216,7 @@ export default function FoodListing() {
                 const expiryStatus = getExpiryStatus(food.expiryDate);
                 
                 return (
-                  <div key={food._id} className="bg-white/90 backdrop-blur-sm rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-all hover:scale-[1.02] border border-green-100">
+                  <div key={food._id} className="bg-white/90 backdrop-blur-sm rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-all hover:scale-[1.02] border border-green-100 flex flex-col h-[500px]">
                     {/* Image */}
                     <div className="relative h-48 bg-gray-200">
                       {food.imageUrl ? (
@@ -242,7 +242,7 @@ export default function FoodListing() {
                     </div>
 
                     {/* Content */}
-                    <div className="p-4">
+                    <div className="p-4 pb-2 flex flex-col flex-grow">
                       <div className="flex items-start justify-between mb-2">
                         <h3 className="text-lg font-semibold text-gray-900 truncate">{food.name}</h3>
                         <span className="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded-full ml-2 whitespace-nowrap">
@@ -250,7 +250,7 @@ export default function FoodListing() {
                         </span>
                       </div>
 
-                      <div className="space-y-2 text-sm text-gray-600">
+                      <div className="space-y-1 text-sm text-[#45A180]">
                         <div className="flex items-center">
                           <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14" />
@@ -283,10 +283,10 @@ export default function FoodListing() {
                         )}
                       </div>
 
-                      <div className="mt-4 pt-4 border-t border-gray-200">
-                        <div className="flex items-center justify-between text-xs text-gray-500">
+                      <div className="mt-auto pt-2 border-t border-gray-200">
+                        <div className="flex items-center justify-between text-xs text-[#45A180]">
                           <span>Posted: {formatDate(food.createdAt)}</span>
-                          <button className="bg-green-600 text-white px-3 py-1 rounded-md text-sm hover:bg-green-700 transition-all hover:scale-105">
+                          <button className="bg-[#45A180] text-white px-3 py-1 rounded-md text-sm hover:bg-[#378667] transition-all hover:scale-105">
                             Contact
                           </button>
                         </div>

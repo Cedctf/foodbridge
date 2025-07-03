@@ -294,7 +294,7 @@ const FoodMapComponent = ({ foods, activeMapLocation, onLocationChange, geocoded
             style={{
               padding: '12px 16px',
               backgroundColor: 'white',
-              color: '#4285F4',
+              color: '#45a180',
               border: '1px solid #e0e0e0',
               borderRadius: '30px',
               fontSize: '14px',
@@ -320,7 +320,7 @@ const FoodMapComponent = ({ foods, activeMapLocation, onLocationChange, geocoded
               <div style={{
                 width: '16px',
                 height: '16px',
-                border: '2px solid #4285F4',
+                border: '2px solid #45a180',
                 borderTop: '2px solid transparent',
                 borderRadius: '50%',
                 animation: 'spin 1s linear infinite'
@@ -329,7 +329,7 @@ const FoodMapComponent = ({ foods, activeMapLocation, onLocationChange, geocoded
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                 <path
                   d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3c-.46-4.17-3.77-7.48-7.94-7.94V1h-2v2.06C6.83 3.52 3.52 6.83 3.06 11H1v2h2.06c.46 4.17 3.77 7.48 7.94 7.94V23h2v-2.06c4.17-.46 7.48-3.77 7.94-7.94H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"
-                  fill="#4285F4"
+                  fill="#45a180"
                 />
               </svg>
             )}
@@ -853,11 +853,11 @@ export default function MapPage() {
   return (
     <div className="min-h-screen" style={{ background: '#F7FCFA' }}>
       {/* Main Content */}
-      <div className="pt-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="mb-6">
+      <div className="pt-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="mb-4">
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Food Map</h1>
-            <p className="text-gray-600">Discover food donations and restaurants near you</p>
+            <p className="text-[#45A180]">Discover food donations and restaurants near you</p>
           </div>
           
           {/* Map Container with integrated search */}
@@ -880,7 +880,8 @@ export default function MapPage() {
                 id="map-sort"
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                className="px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-[#45a180] focus:border-[#45a180]"
+                style={{ color: '#55a180', borderColor: '#45a180' }}
               >
                 <option value="distance">Nearest</option>
                 <option value="newest">Newest first</option>
