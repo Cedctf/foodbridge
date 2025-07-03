@@ -314,8 +314,8 @@ export default function UploadFood() {
                       required
                       value={formData.foodType}
                       onChange={handleInputChange}
-                      className="w-full bg-transparent text-gray-700 focus:outline-none"
-                      style={{ appearance: 'none' }}
+                      className="w-full bg-transparent focus:outline-none"
+                      style={{ appearance: 'none', color: '#45a180' }}
                     >
                       <option value="">Select Food Type</option>
                       <option value="Fruits">Fruits</option>
@@ -343,7 +343,8 @@ export default function UploadFood() {
                       required
                       value={formData.quantity}
                       onChange={handleInputChange}
-                      className="w-full bg-transparent text-gray-700 focus:outline-none"
+                      className="w-full bg-transparent focus:outline-none"
+                      style={{ color: '#45a180' }}
                       placeholder="Quantity (e.g., 2, 5, 10)"
                     />
                   </div>
@@ -362,7 +363,8 @@ export default function UploadFood() {
                           expiryDate: date ? date.toISOString().split('T')[0] : ''
                         }));
                       }}
-                      className="w-full bg-transparent text-gray-700 focus:outline-none"
+                      className="w-full bg-transparent focus:outline-none"
+                      style={{ color: '#45a180', '::placeholder': { color: '#45a180' } }}
                       placeholderText="Expiry Date (MM/DD/YYYY)"
                       dateFormat="MM/dd/yyyy"
                       minDate={new Date()}
@@ -384,7 +386,8 @@ export default function UploadFood() {
                       rows={4}
                       value={formData.description}
                       onChange={handleInputChange}
-                      className="w-full bg-transparent text-gray-700 focus:outline-none resize-none"
+                      className="w-full bg-transparent focus:outline-none resize-none"
+                      style={{ color: '#45a180' }}
                       placeholder="Description (optional)"
                     />
                   </div>
@@ -410,7 +413,8 @@ export default function UploadFood() {
                           required
                           value={formData.locationAddress}
                           onChange={handleInputChange}
-                          className="w-full bg-transparent text-gray-700 focus:outline-none"
+                          className="w-full bg-transparent focus:outline-none"
+                          style={{ color: '#45a180' }}
                           placeholder="Search for a location or address"
                         />
                         <div className="absolute right-3 top-3 text-gray-400">
@@ -447,7 +451,8 @@ export default function UploadFood() {
                       required
                       value={formData.name}
                       onChange={handleInputChange}
-                      className="w-full bg-transparent text-gray-700 focus:outline-none"
+                      className="w-full bg-transparent focus:outline-none"
+                      style={{ color: '#45a180' }}
                       placeholder="Food Item Name (e.g., Fresh Apples, Rice, etc.)"
                     />
                   </div>
@@ -479,7 +484,10 @@ export default function UploadFood() {
                         <button
                           type="button"
                           onClick={handleClickUpload}
-                          className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                          className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#45a180]"
+                          style={{ backgroundColor: '#45a180', transition: 'all 0.2s' }}
+                          onMouseEnter={(e) => e.target.style.backgroundColor = '#378667'}
+                          onMouseLeave={(e) => e.target.style.backgroundColor = '#45a180'}
                         >
                           <svg className="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                             <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z" clipRule="evenodd" />
@@ -539,11 +547,14 @@ export default function UploadFood() {
                   <button
                     type="submit"
                     disabled={loading}
-                    className={`w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-base font-medium text-white ${
-                      loading
-                        ? 'bg-gray-400 cursor-not-allowed'
-                        : 'bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500'
-                    }`}
+                    className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-base font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#45a180]"
+                    style={{ 
+                      backgroundColor: loading ? '#9CA3AF' : '#45a180',
+                      cursor: loading ? 'not-allowed' : 'pointer',
+                      transition: 'all 0.2s'
+                    }}
+                    onMouseEnter={(e) => !loading && (e.target.style.backgroundColor = '#378667')}
+                    onMouseLeave={(e) => !loading && (e.target.style.backgroundColor = '#45a180')}
                   >
                     {loading ? 'Submitting...' : 'Submit'}
                   </button>
@@ -561,6 +572,40 @@ export default function UploadFood() {
       <style jsx global>{`
         #map {
           min-height: 400px;
+        }
+        
+        /* DatePicker custom styles */
+        .react-datepicker__input-container input {
+          color: #45a180 !important;
+        }
+        .react-datepicker__input-container input::placeholder {
+          color: #45a180 !important;
+          opacity: 1;
+        }
+        .react-datepicker__day {
+          color: #45a180;
+        }
+        .react-datepicker__day:hover {
+          background-color: #E5F5F0;
+        }
+        .react-datepicker__day--selected {
+          background-color: #45a180 !important;
+          color: white !important;
+        }
+        .react-datepicker__day--keyboard-selected {
+          background-color: #45a180 !important;
+          color: white !important;
+        }
+        .react-datepicker__header {
+          background-color: #E5F5F0;
+        }
+        .react-datepicker__current-month,
+        .react-datepicker__day-name {
+          color: #45a180;
+        }
+        .react-datepicker__month-select,
+        .react-datepicker__year-select {
+          color: #45a180;
         }
       `}</style>
     </>
