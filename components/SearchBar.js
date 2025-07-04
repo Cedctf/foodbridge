@@ -73,7 +73,7 @@ const SearchBar = ({ onPlaceSelect, autocompleteRef }) => {
               borderRadius: '30px',
               outline: 'none',
               backgroundColor: 'white',
-              color: '#374151'
+              color: '#45A180'
             }}
             onFocus={(e) => {
               e.target.style.boxShadow = '0 0 0 3px rgba(69, 161, 128, 0.1)';
@@ -82,6 +82,12 @@ const SearchBar = ({ onPlaceSelect, autocompleteRef }) => {
               e.target.style.boxShadow = '0 1px 3px rgba(0,0,0,0.1)';
             }}
           />
+          <style jsx>{`
+            input::placeholder {
+              color: #45A180;
+              opacity: 0.7;
+            }
+          `}</style>
         </div>
       </Autocomplete>
     </div>

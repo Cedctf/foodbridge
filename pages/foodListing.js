@@ -4,6 +4,8 @@ import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { Geist } from 'next/font/google';
 import { useUser } from '../contexts/UserContext';
+import { ProjectStatusCard } from '@/components/ui/expandable-card';
+import { MapPin, Clock, Info, Package } from 'lucide-react';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -78,39 +80,67 @@ export default function FoodListing() {
       let requests = [];
       
       if (isAuthenticated && user?.id) {
-        // Fetch requests from API for authenticated users
-        const response = await fetch(`/api/requests?userId=${user.id}`);
-        const result = await response.json();
-        
-        if (result.success) {
-          requests = result.data || [];
-        } else {
-          console.error('Failed to fetch user requests from API:', result.message);
+        try {
+          // Check if API is available first
+          const response = await fetch('/api/requests?userId=' + user.id, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          });
+          
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          
+          const result = await response.json();
+          
+          if (result.success) {
+            requests = result.data || [];
+          } else {
+            console.error('Failed to fetch user requests:', result.message);
+            // Fallback to localStorage if API fails
+            const localRequests = JSON.parse(localStorage.getItem('userRequests') || '[]');
+            requests = localRequests;
+          }
+        } catch (error) {
+          console.error('Error fetching user requests:', error);
+          // Fallback to localStorage on any error
+          const localRequests = JSON.parse(localStorage.getItem('userRequests') || '[]');
+          requests = localRequests;
         }
       } else {
-        // For non-authenticated users, still check localStorage as fallback
+        // For non-authenticated users, use localStorage
         const localRequests = JSON.parse(localStorage.getItem('userRequests') || '[]');
         
-        // Convert localStorage format to match API format
-        requests = await Promise.all(
-          localRequests.map(async (localRequest) => {
-            try {
-              const response = await fetch(`/api/requests?id=${localRequest.requestId}`);
-              const result = await response.json();
-              return result.success ? result.data : null;
-            } catch (error) {
-              console.error('Error fetching individual request:', error);
-              return null;
-            }
-          })
-        );
-        requests = requests.filter(request => request !== null);
+        // Only try to fetch additional details if we have network connectivity
+        try {
+          requests = await Promise.all(
+            localRequests.map(async (localRequest) => {
+              try {
+                const response = await fetch('/api/requests?id=' + localRequest.requestId);
+                if (!response.ok) {
+                  throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const result = await response.json();
+                return result.success ? result.data : null;
+              } catch (error) {
+                console.error('Error fetching individual request:', error);
+                return null;
+              }
+            })
+          );
+          requests = requests.filter(request => request !== null);
+        } catch (error) {
+          console.error('Error processing local requests:', error);
+          requests = localRequests; // Fallback to raw localStorage data
+        }
       }
       
       setUserRequests(requests);
     } catch (error) {
-      console.error('Error loading user requests:', error);
-      // Fallback to localStorage for any errors
+      console.error('Error in loadUserRequests:', error);
+      // Final fallback to localStorage
       const localRequests = JSON.parse(localStorage.getItem('userRequests') || '[]');
       setUserRequests(localRequests);
     } finally {
@@ -244,7 +274,7 @@ export default function FoodListing() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-emerald-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-700 mx-auto"></div>
           <p className="mt-4 text-gray-600">Loading food items...</p>
@@ -268,7 +298,7 @@ export default function FoodListing() {
               <h1 className="text-3xl font-bold text-gray-900 mb-2">
                 Available Food Items
               </h1>
-              <p className="text-[#45A180]">
+              <p className="text-[oklch(59.6%_0.145_163.225)]">
                 {filteredAndSortedFoods.length} items available
               </p>
             </div>
@@ -280,7 +310,7 @@ export default function FoodListing() {
           <div className="max-w-3xl mx-auto">
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="h-5 w-5 text-[#45A180]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
               </div>
@@ -288,7 +318,7 @@ export default function FoodListing() {
                 type="text"
                 value={searchFilter}
                 onChange={(e) => setSearchFilter(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 border-none text-[#45A180] rounded-xl shadow-sm bg-white focus:outline-none"
+                className="w-full pl-12 pr-4 py-3 border-none text-[#45A180] placeholder-[#45A180]/60 rounded-xl shadow-sm bg-white focus:outline-none"
                 placeholder="Search by location or food type"
               />
             </div>
@@ -297,20 +327,20 @@ export default function FoodListing() {
               <div className="flex-1">
                 <button
                   onClick={() => {}}
-                  className="w-full px-4 py-2 bg-[#E5F5F0] rounded-lg shadow-sm hover:bg-[#d8efe8] flex items-center justify-between"
+                  className="w-full px-4 py-2 bg-white rounded-lg shadow-sm hover:bg-gray-50 flex items-center justify-between text-[oklch(59.6%_0.145_163.225)]"
                 >
-                  <span className="text-black">Location</span>
-                  <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <span>Location</span>
+                  <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                   </svg>
                 </button>
               </div>
 
-              <div className="flex-1 text-gray-700">
+              <div className="flex-1">
                 <select
                   value={foodTypeFilter}
                   onChange={(e) => setFoodTypeFilter(e.target.value)}
-                  className="w-full px-4 py-2 bg-[#E5F5F0] rounded-lg shadow-sm hover:bg-[#d8efe8] appearance-none cursor-pointer text-black"
+                  className="w-full px-4 py-2 bg-white rounded-lg shadow-sm hover:bg-gray-50 appearance-none cursor-pointer text-[oklch(59.6%_0.145_163.225)]"
                 >
                   <option value="">Select food type</option>
                   <option value="Fruits">Fruits</option>
@@ -326,11 +356,11 @@ export default function FoodListing() {
                 </select>
               </div>
 
-              <div className="flex-1 text-gray-700">
+              <div className="flex-1">
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="w-full px-4 py-2 bg-[#E5F5F0] rounded-lg shadow-sm hover:bg-[#d8efe8] appearance-none cursor-pointer text-black"
+                  className="w-full px-4 py-2 bg-white rounded-lg shadow-sm hover:bg-gray-50 appearance-none cursor-pointer text-[oklch(59.6%_0.145_163.225)]"
                 >
                   <option value="expiry-soon">Expiry Date ↑</option>
                   <option value="expiry-later">Expiry Date ↓</option>
@@ -367,85 +397,64 @@ export default function FoodListing() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredAndSortedFoods.map((food) => {
                 const expiryStatus = getExpiryStatus(food.expiryDate);
+                const daysUntilExpiry = getDaysUntilExpiry(food.expiryDate);
                 
                 return (
-                  <div key={food._id} className="bg-white/90 backdrop-blur-sm rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-all hover:scale-[1.02] border border-green-100 flex flex-col h-[500px]">
-                    {/* Image */}
-                    <div className="relative h-48 bg-gray-200">
-                      {food.imageUrl ? (
-                        <Image
-                          src={food.imageUrl}
-                          alt={food.name}
-                          fill
-                          className="object-cover"
-                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                        />
-                      ) : (
-                        <div className="flex items-center justify-center h-full text-gray-500">
-                          <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                          </svg>
-                        </div>
-                      )}
-                      
-                      {/* Expiry Badge */}
-                      <div className={`absolute top-2 right-2 px-2 py-1 rounded-full text-xs font-medium ${expiryStatus.color}`}>
-                        {expiryStatus.text}
-                      </div>
-                    </div>
-
-                    {/* Content */}
-                    <div className="p-4 pb-2 flex flex-col flex-grow">
-                      <div className="flex items-start justify-between mb-2">
-                        <h3 className="text-lg font-semibold text-gray-900 truncate">{food.name}</h3>
-                        <span className="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded-full ml-2 whitespace-nowrap">
-                          {food.foodType}
-                        </span>
-                      </div>
-
-                      <div className="space-y-1 text-sm text-[#45A180]">
-                        <div className="flex items-center">
-                          <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14" />
-                          </svg>
-                          <span>Quantity: {food.quantity}</span>
-                        </div>
-
-                        <div className="flex items-center">
-                          <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3a2 2 0 012-2h4a2 2 0 012 2v4m-6 4h6m-6 0v1a2 2 0 002 2h2a2 2 0 002-2v-1" />
-                          </svg>
-                          <span>Expires: {formatDate(food.expiryDate)}</span>
-                        </div>
-
-                        <div className="flex items-start">
-                          <svg className="w-4 h-4 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                          </svg>
+                  <ProjectStatusCard
+                    key={food._id}
+                    title={food.name}
+                    progress={Math.max(0, Math.min(100, (daysUntilExpiry / 7) * 100))} // Convert days to percentage, max 7 days
+                    dueDate={formatDate(food.expiryDate)}
+                    contributors={[
+                      {
+                        name: food.donorName || 'Anonymous',
+                        image: food.donorAvatar
+                      }
+                    ]}
+                    tasks={[
+                      { title: `Quantity: ${food.quantity}`, completed: false },
+                      { title: `Type: ${food.foodType}`, completed: false },
+                    ]}
+                    githubStars={food.quantity}
+                    openIssues={daysUntilExpiry}
+                    customContent={
+                      <div className="space-y-2">
+                        <div className="flex items-start text-gray-900">
+                          <MapPin className="w-3 h-3 mr-2 mt-1.5 flex-shrink-0" />
                           <span className="line-clamp-2">{food.locationAddress}</span>
                         </div>
-
                         {food.description && (
-                          <div className="flex items-start">
-                            <svg className="w-4 h-4 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
+                          <div className="flex items-center text-gray-900">
+                            <Info className="w-3 h-3 mr-2" />
                             <span className="line-clamp-2">{food.description}</span>
                           </div>
                         )}
-                      </div>
-
-                      <div className="mt-auto pt-2 border-t border-gray-200">
-                        <div className="flex items-center justify-between text-xs text-[#45A180]">
-                          <span>Posted: {formatDate(food.createdAt)}</span>
-                          <button className="bg-[#45A180] text-white px-3 py-1 rounded-md text-sm hover:bg-[#378667] transition-all hover:scale-105">
+                        <div className="mt-4">
+                          <button 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleContactClick(food);
+                            }}
+                            className="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 text-white px-3 py-2 rounded-md text-sm hover:shadow-lg transition-all hover:scale-105"
+                          >
                             Contact
                           </button>
                         </div>
                       </div>
-                    </div>
-                  </div>
+                    }
+                    imageUrl={food.imageUrl}
+                    statusBadge={
+                      <div className={`px-2 py-1 rounded-full text-xs font-medium ${expiryStatus.color}`}>
+                        {expiryStatus.text}
+                      </div>
+                    }
+                    footerContent={
+                      <div className="flex items-center justify-between w-full text-xs text-[oklch(59.6%_0.145_163.225)]">
+                        <span>Posted: {formatDate(food.createdAt)}</span>
+                        <span>{food.foodType}</span>
+                      </div>
+                    }
+                  />
                 );
               })}
             </div>

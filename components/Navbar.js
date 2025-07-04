@@ -40,20 +40,20 @@ export default function Navbar() {
                   className="object-contain"
                 />
               </div>
-              <span className="text-2xl font-bold text-[#45A180]">
+              <span className="text-2xl font-bold bg-gradient-to-r from-emerald-500 to-emerald-600 bg-clip-text text-transparent">
                 FoodBridge
               </span>
             </Link>
           </div>
           <div className="hidden md:flex items-center space-x-8">
-            <Link href="/foodListing" className="text-[#45A180] hover:text-[#378667] transition-colors">Listings</Link>
-            <Link href="/map" className="text-[#45A180] hover:text-[#378667] transition-colors">Map</Link>
-            <Link href="/uploadFood" className="text-[#45A180] hover:text-[#378667] transition-colors">Donate</Link>
-            <Link href="/blog" className="text-[#45A180] hover:text-[#378667] transition-colors">Blog</Link>
+            <Link href="/foodListing" className="text-[oklch(59.6%_0.145_163.225)] hover:opacity-80 transition-opacity">Listings</Link>
+            <Link href="/map" className="text-[oklch(59.6%_0.145_163.225)] hover:opacity-80 transition-opacity">Map</Link>
+            <Link href="/uploadFood" className="text-[oklch(59.6%_0.145_163.225)] hover:opacity-80 transition-opacity">Donate</Link>
+            <Link href="/blog" className="text-[oklch(59.6%_0.145_163.225)] hover:opacity-80 transition-opacity">Blog</Link>
             
             <button 
               onClick={handleProfileClick}
-              className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-4 py-2 rounded-full hover:shadow-lg transition-all duration-300 transform hover:scale-105"
+              className="bg-gradient-to-r from-emerald-400 to-emerald-600 text-white px-4 py-2 rounded-full hover:shadow-lg transition-all duration-300 transform hover:scale-105"
             >
               Profile
             </button>

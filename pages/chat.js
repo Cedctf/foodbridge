@@ -121,7 +121,7 @@ export default function Chat() {
         <meta name="description" content="Real-time chat for FoodBridge community" />
       </Head>
 
-      <div className="min-h-screen bg-gray-900 pt-20">
+      <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-emerald-50 pt-20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 h-screen flex flex-col">
           {/* Chat Header */}
           <div className="bg-gray-800 rounded-t-lg p-4 border-b border-gray-700">

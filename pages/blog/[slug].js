@@ -4,7 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import Navbar from '../../components/Navbar';
 // import Footer from '../../components/footer';
-import Footer from '../components/Footer';
+import Footer from '../../components/Footer';
 
 // Sample blog posts data - this should match the data in blog.js
 const sampleBlogPosts = [
@@ -101,7 +101,7 @@ export default function BlogPost() {
       
       <Navbar />
       
-      <main className="pt-20 pb-12 bg-gray-50">
+      <main className="pt-20 pb-12 bg-gradient-to-br from-green-50 via-white to-emerald-50">
         <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Hero Image */}
           <div className="relative w-full h-96 mb-8 rounded-lg overflow-hidden">
@@ -166,7 +166,7 @@ export default function BlogPost() {
           
           {/* Back to Blog Link */}
           <div className="mt-12">
-            <Link href="/blog" className="inline-flex items-center text-green-600 hover:text-green-800">
+            <Link href="/blog" className="inline-flex items-center hover:opacity-80" style={{ color: 'oklch(59.6% 0.145 163.225)' }}>
               <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
               </svg>

@@ -5,6 +5,7 @@ import { useRouter } from 'next/router'
 import Image from 'next/image'
 import { LoadScript, GoogleMap, Marker } from '@react-google-maps/api'
 import { useUser } from '../contexts/UserContext'
+import { Mail } from "lucide-react"
 
 const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
@@ -177,7 +178,7 @@ export default function RequestPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#F6FBF8]">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-green-50 via-white to-emerald-50">
       <main className="flex-1 max-w-3xl mx-auto w-full px-4 py-8">
         <h1 className="text-3xl font-bold mb-2 text-gray-900">Request</h1>
         <p className="text-gray-700 mb-6">Confirm your claim and coordinate pickup details.</p>
@@ -236,7 +237,7 @@ export default function RequestPage() {
               <div className="font-semibold text-gray-900">Superwoman</div>
               <div className="text-xs text-gray-600">created: 2 hours ago</div>
             </div>
-            <span className="ml-2 text-green-600 text-xl">&#128222;</span>
+            <Mail className="ml-6 text-emerald-600 w-5 h-5" />
           </div>
           <div className="w-full bg-white rounded-xl shadow-lg p-4 flex flex-col items-center">
             <div className="w-full" style={{ height: 224 }}>
@@ -295,7 +296,7 @@ export default function RequestPage() {
                   value={requestForm.requesterName}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-3 py-2 border-2 border-gray-400 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 text-gray-900 bg-white"
+                  className="w-full px-3 py-2 border-2 border-[oklch(59.6%_0.145_163.225)] rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[oklch(59.6%_0.145_163.225)] focus:border-[oklch(59.6%_0.145_163.225)] hover:border-[oklch(59.6%_0.145_163.225)] text-gray-900 bg-white"
                   placeholder="Enter your full name"
                 />
               </div>
@@ -310,7 +311,7 @@ export default function RequestPage() {
                   value={requestForm.requesterEmail}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-3 py-2 border-2 border-gray-400 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 text-gray-900 bg-white"
+                  className="w-full px-3 py-2 border-2 border-[oklch(59.6%_0.145_163.225)] rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[oklch(59.6%_0.145_163.225)] focus:border-[oklch(59.6%_0.145_163.225)] hover:border-[oklch(59.6%_0.145_163.225)] text-gray-900 bg-white"
                   placeholder="Enter your email address"
                 />
               </div>
@@ -325,7 +326,7 @@ export default function RequestPage() {
                 name="requesterPhone"
                 value={requestForm.requesterPhone}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border-2 border-gray-400 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 text-gray-900 bg-white"
+                className="w-full px-3 py-2 border-2 border-[oklch(59.6%_0.145_163.225)] rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[oklch(59.6%_0.145_163.225)] focus:border-[oklch(59.6%_0.145_163.225)] hover:border-[oklch(59.6%_0.145_163.225)] text-gray-900 bg-white"
                 placeholder="Enter your phone number"
               />
             </div>
@@ -339,14 +340,14 @@ export default function RequestPage() {
                 value={requestForm.message}
                 onChange={handleInputChange}
                 rows={3}
-                className="w-full px-3 py-2 border-2 border-gray-400 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 text-gray-900 bg-white"
+                className="w-full px-3 py-2 border-2 border-[oklch(59.6%_0.145_163.225)] rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[oklch(59.6%_0.145_163.225)] focus:border-[oklch(59.6%_0.145_163.225)] hover:border-[oklch(59.6%_0.145_163.225)] text-gray-900 bg-white"
                 placeholder="Add any additional information or special requests..."
               />
             </div>
             <button 
               type="submit"
               disabled={submitting || !foodData}
-              className="w-full bg-green-600 text-white py-3 rounded-full font-semibold hover:bg-green-700 transition disabled:bg-gray-400 disabled:cursor-not-allowed"
+              className="w-full bg-gradient-to-r from-emerald-400 to-emerald-600 text-white px-4 py-2 rounded-full hover:shadow-lg transition-all duration-300 transform hover:scale-105 font-semibold disabled:bg-gray-400 disabled:cursor-not-allowed"
             >
               {submitting ? 'Submitting Request...' : 'Submit Request'}
             </button>

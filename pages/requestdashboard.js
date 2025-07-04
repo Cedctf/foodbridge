@@ -1,9 +1,9 @@
-
 import { useUser } from '../contexts/UserContext';
 import Head from 'next/head';
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
+import { RotateCcw, MapPin } from "lucide-react";
 
 
 
@@ -155,10 +155,10 @@ export default function RequestDashboard() {
   const getStatusColor = (status) => {
     switch (status) {
       case 'pending':
-        return 'bg-[#E6F5ED] text-[#38A169]';
+        return 'bg-[#CCE6FF] text-[#2B6CB0]';
       case 'approved':
       case 'accepted':
-        return 'bg-[#CCE6FF] text-[#2B6CB0]';
+        return 'bg-[#E6F5ED] text-[#38A169]';
       case 'rejected':
         return 'bg-[#FFDCDC] text-[#E53E3E]';
       case 'completed':
@@ -205,7 +205,7 @@ export default function RequestDashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#F5F5F5]">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 via-white to-emerald-50">
         <div className="text-xl font-medium text-[#38A169]">Loading...</div>
       </div>
     );
@@ -222,7 +222,7 @@ export default function RequestDashboard() {
         <meta name="description" content="View and manage your food requests on FoodBridge" />
       </Head>
       
-      <div className="min-h-screen bg-[#F5F5F5]">
+      <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-emerald-50">
         <main className="max-w-5xl mx-auto w-full py-12 px-4 sm:px-8">
           {/* Header */}
           <div className="mb-8">
@@ -244,10 +244,11 @@ export default function RequestDashboard() {
                 )}
                 <button
                   onClick={() => window.location.reload()}
-                  className="text-[14px] text-[#38A169] hover:text-[#2F855A] transition-colors"
+                  className="text-[14px] text-[oklch(59.6%_0.145_163.225)] hover:text-[oklch(49.6%_0.145_163.225)] transition-colors flex items-center"
                   title="Refresh requests"
                 >
-                  🔄 Refresh
+                  <RotateCcw className="w-5 h-5 mr-1 text-[oklch(59.6%_0.145_163.225)] group-hover:text-[oklch(49.6%_0.145_163.225)]" />
+                  Refresh
                 </button>
               </div>
             </div>
@@ -362,8 +363,9 @@ export default function RequestDashboard() {
                         Request ID: {request.requestId.slice(-8)}
                       </div>
                       {request.locationAddress && (
-                        <div className="text-[12px] text-[#666666] max-w-[200px] truncate">
-                          📍 {request.locationAddress}
+                        <div className="text-[12px] text-[#666666] flex items-center">
+                          <MapPin className="w-4 h-4 mr-1 text-[oklch(59.6%_0.145_163.225)]" />
+                          {request.locationAddress}
                         </div>
                       )}
                       
@@ -371,13 +373,10 @@ export default function RequestDashboard() {
                       {(request.status === 'pending' || request.status === 'approved' || request.status === 'accepted') && (
                         <button
                           onClick={() => handleContactDonor(request)}
-                          className="mt-2 bg-[#38A169] hover:bg-[#2F855A] text-white px-4 py-2 rounded-[6px] text-[14px] font-medium transition-colors duration-200 flex items-center space-x-2"
+                          className="mt-2 bg-gradient-to-r from-emerald-400 to-emerald-600 text-white px-3 py-1 rounded-md hover:shadow-lg transition-all duration-300 transform hover:scale-105 font-medium text-sm"
                           title="Contact the donor"
                         >
-                          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
-                          </svg>
-                          <span>Contact Donor</span>
+                          Contact Donor
                         </button>
                       )}
                     </div>

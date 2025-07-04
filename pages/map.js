@@ -1,5 +1,6 @@
 import dynamic from 'next/dynamic';
 import { useState, useEffect, useRef } from 'react';
+import { useRouter } from 'next/router';
 import SmallFoodCard from '../components/SmallFoodCard';
 import LocationPin from '../components/LocationPin';
 import SearchBar from '../components/SearchBar';
@@ -13,8 +14,7 @@ const GoogleMapComponent = dynamic(
 );
 
 // Custom Map Component that includes food markers with LocationPin
-const FoodMapComponent = ({ foods, activeMapLocation, onLocationChange, geocodedFoods }) => {
-  const [selectedFood, setSelectedFood] = useState(null);
+const FoodMapComponent = ({ foods, activeMapLocation, onLocationChange, geocodedFoods, selectedFood, setSelectedFood }) => {
   const [mapLoaded, setMapLoaded] = useState(false);
   const [mapRef, setMapRef] = useState(null);
   const [googleLoaded, setGoogleLoaded] = useState(false);
@@ -118,6 +118,12 @@ const FoodMapComponent = ({ foods, activeMapLocation, onLocationChange, geocoded
     return `${daysLeft} days left`;
   };
   
+  // Handle contact button click
+  const handleContactClick = (food) => {
+    // Navigate to the request page with the food ID
+    window.location.href = `/request?foodId=${food._id}`;
+  };
+
   // Handle food marker click
   const handleFoodMarkerClick = (food) => {
     // Clear hover state when clicking
@@ -438,7 +444,7 @@ const FoodMapComponent = ({ foods, activeMapLocation, onLocationChange, geocoded
                   
                   <div style={{
                     fontSize: '12px',
-                    color: '#666',
+                    color: 'oklch(59.6% 0.145 163.225)',
                     marginBottom: '8px'
                   }}>
                     📍 {hoveredFood.locationAddress}
@@ -480,27 +486,50 @@ const FoodMapComponent = ({ foods, activeMapLocation, onLocationChange, geocoded
                     gap: '8px',
                     marginTop: '12px'
                   }}>
-                    <button style={{
-                      flex: 1,
-                      padding: '8px 12px',
-                      backgroundColor: '#4CAF50',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '4px',
-                      fontSize: '12px',
-                      cursor: 'pointer'
-                    }}>
+                    <button 
+                      onClick={() => handleContactClick(hoveredFood)}
+                      style={{
+                        flex: 1,
+                        padding: '8px 12px',
+                        background: 'linear-gradient(to right, #10b981, #059669)',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '4px',
+                        fontSize: '12px',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.target.style.transform = 'scale(1.02)';
+                        e.target.style.boxShadow = '0 4px 8px rgba(0,0,0,0.15)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.target.style.transform = 'scale(1)';
+                        e.target.style.boxShadow = 'none';
+                      }}
+                    >
                       Contact
                     </button>
                     
                     <button style={{
                       padding: '8px 12px',
                       backgroundColor: 'transparent',
-                      color: '#4CAF50',
-                      border: '1px solid #4CAF50',
+                      color: '#10b981',
+                      border: '1px solid #10b981',
                       borderRadius: '4px',
                       fontSize: '12px',
-                      cursor: 'pointer'
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.target.style.backgroundColor = '#10b981';
+                      e.target.style.color = 'white';
+                      e.target.style.transform = 'scale(1.02)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.target.style.backgroundColor = 'transparent';
+                      e.target.style.color = '#10b981';
+                      e.target.style.transform = 'scale(1)';
                     }}>
                       View Details
                     </button>
@@ -572,7 +601,7 @@ const FoodMapComponent = ({ foods, activeMapLocation, onLocationChange, geocoded
                   
                   <div style={{
                     fontSize: '12px',
-                    color: '#666',
+                    color: 'oklch(59.6% 0.145 163.225)',
                     marginBottom: '8px'
                   }}>
                     📍 {selectedFood.locationAddress}
@@ -614,27 +643,50 @@ const FoodMapComponent = ({ foods, activeMapLocation, onLocationChange, geocoded
                     gap: '8px',
                     marginTop: '12px'
                   }}>
-                    <button style={{
-                      flex: 1,
-                      padding: '8px 12px',
-                      backgroundColor: '#4CAF50',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '4px',
-                      fontSize: '12px',
-                      cursor: 'pointer'
-                    }}>
+                    <button 
+                      onClick={() => handleContactClick(selectedFood)}
+                      style={{
+                        flex: 1,
+                        padding: '8px 12px',
+                        background: 'linear-gradient(to right, #10b981, #059669)',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '4px',
+                        fontSize: '12px',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.target.style.transform = 'scale(1.02)';
+                        e.target.style.boxShadow = '0 4px 8px rgba(0,0,0,0.15)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.target.style.transform = 'scale(1)';
+                        e.target.style.boxShadow = 'none';
+                      }}
+                    >
                       Contact
                     </button>
                     
                     <button style={{
                       padding: '8px 12px',
                       backgroundColor: 'transparent',
-                      color: '#4CAF50',
-                      border: '1px solid #4CAF50',
+                      color: '#10b981',
+                      border: '1px solid #10b981',
                       borderRadius: '4px',
                       fontSize: '12px',
-                      cursor: 'pointer'
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.target.style.backgroundColor = '#10b981';
+                      e.target.style.color = 'white';
+                      e.target.style.transform = 'scale(1.02)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.target.style.backgroundColor = 'transparent';
+                      e.target.style.color = '#10b981';
+                      e.target.style.transform = 'scale(1)';
                     }}>
                       View Details
                     </button>
@@ -690,6 +742,7 @@ export default function MapPage() {
   const [userLocation, setUserLocation] = useState(null);
   const [activeMapLocation, setActiveMapLocation] = useState({ lat: 1.3521, lng: 103.8198 }); // Default to Singapore
   const [geocodedFoods, setGeocodedFoods] = useState(new Map()); // Cache for geocoded coordinates
+  const [selectedFood, setSelectedFood] = useState(null);
 
   // Geocode food addresses to get coordinates
   const geocodeFoodAddresses = async (foodItems) => {
@@ -850,6 +903,20 @@ export default function MapPage() {
     return `${distance.toFixed(1)} km away`;
   };
 
+  // Handle food card click to center map on that location
+  const handleFoodCardClick = (food) => {
+    // Get coordinates from geocoded cache or use food coordinates
+    const geocodedCoords = geocodedFoods.get(food._id);
+    const foodLat = geocodedCoords?.lat || food.lat || 3.1390;
+    const foodLng = geocodedCoords?.lng || food.lng || 101.6869;
+    
+    // Center the map on the selected food location
+    setActiveMapLocation({ lat: foodLat, lng: foodLng });
+    
+    // Set the selected food to show its info window
+    setSelectedFood(food);
+  };
+
   return (
     <div className="min-h-screen" style={{ background: '#F7FCFA' }}>
       {/* Main Content */}
@@ -857,7 +924,7 @@ export default function MapPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="mb-4">
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Food Map</h1>
-            <p className="text-[#45A180]">Discover food donations and restaurants near you</p>
+            <p className="text-[oklch(59.6%_0.145_163.225)]">Discover food donations and restaurants near you</p>
           </div>
           
           {/* Map Container with integrated search */}
@@ -867,6 +934,8 @@ export default function MapPage() {
               activeMapLocation={activeMapLocation}
               onLocationChange={handleMapLocationChange} 
               geocodedFoods={geocodedFoods}
+              selectedFood={selectedFood}
+              setSelectedFood={setSelectedFood}
             />
           </div>
           
@@ -880,8 +949,8 @@ export default function MapPage() {
                 id="map-sort"
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-[#45a180] focus:border-[#45a180]"
-                style={{ color: '#55a180', borderColor: '#45a180' }}
+                className="px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-[oklch(59.6%_0.145_163.225)] focus:border-[oklch(59.6%_0.145_163.225)]"
+                style={{ color: 'oklch(59.6% 0.145 163.225)', borderColor: 'oklch(59.6% 0.145 163.225)' }}
               >
                 <option value="distance">Nearest</option>
                 <option value="newest">Newest first</option>
@@ -908,7 +977,8 @@ export default function MapPage() {
               foods={getSortedFoods()} 
               loading={loading} 
               error={error} 
-              formatDistance={formatDistance} 
+              formatDistance={formatDistance}
+              onFoodCardClick={handleFoodCardClick}
             />
           </div>
         </div>

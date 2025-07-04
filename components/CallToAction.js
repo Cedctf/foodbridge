@@ -25,11 +25,11 @@ export default function CallToAction() {
                 Join our community today and help reduce food waste while connecting with people in your neighborhood. Every meal shared is a step toward a more sustainable future.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
-                <Link href="/signup" className="group bg-gradient-to-r from-green-500 to-emerald-600 text-white px-6 py-3 rounded-full text-base font-semibold hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex items-center justify-center">
+                <Link href="/register" className="group bg-gradient-to-r from-emerald-500 to-emerald-600 text-white px-6 py-3 rounded-full text-base font-semibold hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex items-center justify-center">
                   Join FoodBridge
                   <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
                 </Link>
-                <Link href="/foodListing" className="bg-white text-green-600 border-2 border-green-500 px-6 py-3 rounded-full text-base font-semibold hover:bg-green-50 transition-all duration-300 transform hover:scale-105 flex items-center justify-center">
+                <Link href="/foodListing" className="bg-white text-emerald-500 border-2 border-emerald-500 px-6 py-3 rounded-full text-base font-semibold hover:bg-emerald-50 transition-all duration-300 transform hover:scale-105 flex items-center justify-center">
                   Explore Listings
                 </Link>
               </div>

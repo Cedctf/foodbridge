@@ -5,6 +5,112 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { LoadScript, Autocomplete } from '@react-google-maps/api';
 import { useRouter } from 'next/router';
 import { useAuth } from '../hooks/useAuth';
+import React from 'react';
+
+// Custom Input component
+const CustomInput = React.forwardRef(({ className, type, value, ...props }, ref) => {
+  return (
+    <input
+      type={type}
+      className={`flex h-9 w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm shadow-sm shadow-black/5 transition-shadow placeholder:text-gray-500/70 focus-visible:border-emerald-500 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-emerald-500/20 disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
+      style={{ color: value ? 'oklch(59.6% 0.145 163.225)' : '#6b7280' }}
+      ref={ref}
+      {...props}
+    />
+  );
+});
+
+// Custom Select component
+const CustomSelect = ({
+  options,
+  label,
+  value,
+  placeholder,
+  disabled = false,
+  onChange,
+  name
+}) => {
+  return (
+    <div>
+      {label && (
+        <label className="block text-sm font-medium mb-2" style={{ color: '#000000' }}>
+          {label}
+        </label>
+      )}
+      <div className="relative flex items-center">
+        <select
+          name={name}
+          disabled={disabled}
+          value={value}
+          onChange={onChange}
+          className="flex h-9 w-full appearance-none rounded-lg border border-gray-200 bg-white px-3 py-2 pr-9 text-sm shadow-sm shadow-black/5 transition-shadow placeholder:text-gray-500/70 focus-visible:border-emerald-500 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-emerald-500/20 disabled:cursor-not-allowed disabled:opacity-50"
+          style={{ color: value ? 'oklch(59.6% 0.145 163.225)' : '#6b7280' }}
+        >
+          {placeholder && <option value="" disabled>{placeholder}</option>}
+          {options && options.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+        <span className="absolute right-3 pointer-events-none">
+          <svg className="h-4 w-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </svg>
+        </span>
+      </div>
+    </div>
+  );
+};
+
+// Custom Label component
+const Label = ({ children, htmlFor, className = "" }) => {
+  return (
+    <label htmlFor={htmlFor} className={`block text-sm font-medium mb-2 ${className}`} style={{ color: '#000000' }}>
+      {children}
+    </label>
+  );
+};
+
+// Custom Textarea component
+const Textarea = ({ className, value, ...props }) => {
+  return (
+    <textarea
+      className={`flex min-h-[80px] w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm shadow-sm shadow-black/5 transition-shadow placeholder:text-gray-500/70 focus-visible:border-emerald-500 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-emerald-500/20 disabled:cursor-not-allowed disabled:opacity-50 resize-none ${className}`}
+      style={{ color: value ? 'oklch(59.6% 0.145 163.225)' : '#6b7280' }}
+      {...props}
+    />
+  );
+};
+
+// Custom Button component
+const Button = ({ children, variant = "default", size = "default", className = "", ...props }) => {
+  const baseClasses = "inline-flex items-center justify-center rounded-lg text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50";
+  
+  const variants = {
+    default: "bg-gradient-to-r from-emerald-500 to-emerald-600 text-white shadow hover:shadow-lg",
+    outline: "border border-gray-200 bg-white text-gray-900 hover:bg-gray-50",
+    secondary: "bg-gray-100 text-gray-900 hover:bg-gray-200",
+    destructive: "bg-red-500 text-white hover:bg-red-600",
+    ghost: "hover:bg-gray-100 text-gray-900",
+  };
+  
+  const sizes = {
+    default: "h-9 px-4 py-2",
+    sm: "h-8 rounded-md px-3 text-xs",
+    lg: "h-10 rounded-md px-8",
+    icon: "h-9 w-9",
+  };
+  
+  return (
+    <button
+      className={`${baseClasses} ${variants[variant]} ${sizes[size]} ${className}`}
+      {...props}
+    >
+      {children}
+    </button>
+  );
+};
 
 export default function UploadFood() {
   const [formData, setFormData] = useState({
@@ -28,6 +134,20 @@ export default function UploadFood() {
   const autocompleteRef = useRef(null);
   const router = useRouter();
   const { user, isAuthenticated } = useAuth();
+
+  // Food type options
+  const foodTypeOptions = [
+    { value: "Fruits", label: "Fruits" },
+    { value: "Vegetables", label: "Vegetables" },
+    { value: "Grains", label: "Grains" },
+    { value: "Dairy", label: "Dairy" },
+    { value: "Meat", label: "Meat" },
+    { value: "Seafood", label: "Seafood" },
+    { value: "Beverages", label: "Beverages" },
+    { value: "Snacks", label: "Snacks" },
+    { value: "Prepared Meals", label: "Prepared Meals" },
+    { value: "Other", label: "Other" },
+  ];
 
   useEffect(() => {
     // Check if window is defined (client-side)
@@ -305,64 +425,61 @@ export default function UploadFood() {
         <meta name="description" content="Upload food items to share with the community" />
       </Head>
 
-      <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-6xl mx-auto">
+      <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-emerald-50 py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
           <div className="text-center mb-10">
             <h1 className="text-4xl font-bold text-gray-900">List Your Surplus Food</h1>
           </div>
 
-          <div className="flex flex-col lg:flex-row gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Left column - Form inputs */}
-            <div className="lg:w-1/2 space-y-4">
-              <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="bg-white rounded-lg border shadow-sm p-6 overflow-hidden">
+              <form onSubmit={handleSubmit} className="space-y-6">
+                {/* Food Item Name */}
+                <div className="space-y-2">
+                  <Label htmlFor="name">Food Item Name</Label>
+                  <CustomInput
+                    id="name"
+                    name="name"
+                    type="text"
+                    required
+                    value={formData.name}
+                    onChange={handleInputChange}
+                    placeholder="Enter food item name (e.g., Fresh Apples, Rice, etc.)"
+                  />
+                </div>
+
                 {/* Food Type */}
-                <div>
-                  <div className="bg-green-50 rounded-md p-4 border border-green-100">
-                    <select
-                      id="foodType"
-                      name="foodType"
-                      required
-                      value={formData.foodType}
-                      onChange={handleInputChange}
-                      className="w-full bg-transparent focus:outline-none"
-                      style={{ appearance: 'none', color: '#45a180' }}
-                    >
-                      <option value="">Select Food Type</option>
-                      <option value="Fruits">Fruits</option>
-                      <option value="Vegetables">Vegetables</option>
-                      <option value="Grains">Grains</option>
-                      <option value="Dairy">Dairy</option>
-                      <option value="Meat">Meat</option>
-                      <option value="Seafood">Seafood</option>
-                      <option value="Beverages">Beverages</option>
-                      <option value="Snacks">Snacks</option>
-                      <option value="Prepared Meals">Prepared Meals</option>
-                      <option value="Other">Other</option>
-                    </select>
-                  </div>
+                <div className="space-y-2">
+                  <CustomSelect
+                    label="Select Food Type"
+                    options={foodTypeOptions}
+                    value={formData.foodType}
+                    placeholder="Choose food type"
+                    onChange={(e) => handleInputChange(e)}
+                    name="foodType"
+                  />
                 </div>
 
                 {/* Quantity */}
-                <div>
-                  <div className="bg-green-50 rounded-md p-4 border border-green-100">
-                    <input
-                      id="quantity"
-                      name="quantity"
-                      type="number"
-                      min="1"
-                      required
-                      value={formData.quantity}
-                      onChange={handleInputChange}
-                      className="w-full bg-transparent focus:outline-none"
-                      style={{ color: '#45a180' }}
-                      placeholder="Quantity (e.g., 2, 5, 10)"
-                    />
-                  </div>
+                <div className="space-y-2">
+                  <Label htmlFor="quantity">Quantity</Label>
+                  <CustomInput
+                    id="quantity"
+                    name="quantity"
+                    type="number"
+                    min="1"
+                    required
+                    value={formData.quantity}
+                    onChange={handleInputChange}
+                    placeholder="Enter quantity (e.g., 2, 5, 10)"
+                  />
                 </div>
 
                 {/* Expiry Date */}
-                <div>
-                  <div className="bg-green-50 rounded-md p-4 border border-green-100">
+                <div className="space-y-2">
+                  <Label htmlFor="expiryDate">Expiry Date (MM/DD/YYYY)</Label>
+                  <div className="relative">
                     <DatePicker
                       id="expiryDate"
                       name="expiryDate"
@@ -373,9 +490,9 @@ export default function UploadFood() {
                           expiryDate: date ? date.toISOString().split('T')[0] : ''
                         }));
                       }}
-                      className="w-full bg-transparent focus:outline-none"
-                      style={{ color: '#45a180', '::placeholder': { color: '#45a180' } }}
-                      placeholderText="Expiry Date (MM/DD/YYYY)"
+                      className="flex h-9 w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm shadow-sm shadow-black/5 transition-shadow placeholder:text-gray-500/70 focus-visible:border-emerald-500 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-emerald-500/20 disabled:cursor-not-allowed disabled:opacity-50"
+                      style={{ color: formData.expiryDate ? 'oklch(59.6% 0.145 163.225)' : '#6b7280' }}
+                      placeholderText="Select expiry date"
                       dateFormat="MM/dd/yyyy"
                       minDate={new Date()}
                       showMonthDropdown
@@ -383,198 +500,258 @@ export default function UploadFood() {
                       dropdownMode="select"
                       required
                       autoComplete="off"
-                    />
-                  </div>
-                </div>
-
-                {/* Description */}
-                <div>
-                  <div className="bg-green-50 rounded-md p-4 border border-green-100">
-                    <textarea
-                      id="description"
-                      name="description"
-                      rows={4}
-                      value={formData.description}
-                      onChange={handleInputChange}
-                      className="w-full bg-transparent focus:outline-none resize-none"
-                      style={{ color: '#45a180' }}
-                      placeholder="Description (optional)"
+                      wrapperClassName="w-full"
                     />
                   </div>
                 </div>
 
                 {/* Location Address */}
-                <div className="relative">
-                  {isScriptLoaded ? (
-                    <Autocomplete
-                      onLoad={onLoad}
-                      onPlaceChanged={onPlaceChanged}
-                      options={{
-                        types: ['geocode', 'establishment'],
-                        componentRestrictions: { country: 'my' },
-                        fields: ['formatted_address', 'geometry', 'name']
-                      }}
-                    >
-                      <div className="bg-green-50 rounded-md p-4 border border-green-100">
-                        <input
+                <div className="space-y-2">
+                  <Label htmlFor="locationAddress">Search for a location or address</Label>
+                  <div className="relative">
+                    {isScriptLoaded ? (
+                      <Autocomplete
+                        onLoad={onLoad}
+                        onPlaceChanged={onPlaceChanged}
+                        options={{
+                          types: ['geocode', 'establishment'],
+                          componentRestrictions: { country: 'my' },
+                          fields: ['formatted_address', 'geometry', 'name']
+                        }}
+                      >
+                        <CustomInput
                           id="locationAddress"
                           name="locationAddress"
                           type="text"
                           required
                           value={formData.locationAddress}
                           onChange={handleInputChange}
-                          className="w-full bg-transparent focus:outline-none"
-                          style={{ color: '#45a180' }}
-                          placeholder="Search for a location or address"
+                          placeholder="Enter location or address"
+                          className="pl-9"
                         />
-                        <div className="absolute right-3 top-3 text-gray-400">
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
-                          </svg>
-                        </div>
-                      </div>
-                    </Autocomplete>
-                  ) : (
-                    <div className="bg-green-50 rounded-md p-4 border border-green-100">
-                      <input
+                      </Autocomplete>
+                    ) : (
+                      <CustomInput
                         id="locationAddress"
                         name="locationAddress"
                         type="text"
                         required
                         value={formData.locationAddress}
                         onChange={handleInputChange}
-                        className="w-full bg-transparent text-gray-700 focus:outline-none"
                         placeholder="Loading map..."
                         disabled
+                        className="pl-9"
                       />
-                    </div>
-                  )}
-                </div>
-
-                {/* Food Name */}
-                <div>
-                  <div className="bg-green-50 rounded-md p-4 border border-green-100">
-                    <input
-                      id="name"
-                      name="name"
-                      type="text"
-                      required
-                      value={formData.name}
-                      onChange={handleInputChange}
-                      className="w-full bg-transparent focus:outline-none"
-                      style={{ color: '#45a180' }}
-                      placeholder="Food Item Name (e.g., Fresh Apples, Rice, etc.)"
-                    />
+                    )}
+                    <svg className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
                   </div>
                 </div>
 
+                {/* Description */}
+                <div className="space-y-2">
+                  <Label htmlFor="description">Description</Label>
+                  <Textarea
+                    id="description"
+                    name="description"
+                    rows={4}
+                    value={formData.description}
+                    onChange={handleInputChange}
+                    placeholder="Describe the food item, condition, etc. (optional)"
+                  />
+                </div>
+
                 {/* Image Upload Section */}
-                <div className="mt-10">
-                  <div 
-                    ref={dropAreaRef}
-                    className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${isDragging ? 'border-green-500 bg-green-50' : 'border-gray-300'}`}
-                    onDragOver={handleDragOver}
-                    onDragLeave={handleDragLeave}
-                    onDrop={handleDrop}
-                  >
-                    <div className="space-y-2">
-                      <div className="flex justify-center">
-                        <svg className={`w-12 h-12 mx-auto ${isDragging ? 'text-green-500' : 'text-gray-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                <div className="space-y-2">
+                  <Label>Upload a Photo (Optional)</Label>
+                  <CustomInput
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    ref={fileInputRef}
+                    onChange={handleImageChange}
+                    id="image"
+                    name="image"
+                  />
+
+                  {!image ? (
+                    <div
+                      ref={dropAreaRef}
+                      onClick={handleClickUpload}
+                      onDragOver={handleDragOver}
+                      onDragLeave={handleDragLeave}
+                      onDrop={handleDrop}
+                      className={`flex h-32 cursor-pointer flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed transition-colors ${
+                        isDragging 
+                          ? 'border-emerald-500/50 bg-emerald-50' 
+                          : 'border-gray-300 bg-gray-50 hover:bg-gray-100'
+                      }`}
+                    >
+                      <div className="rounded-full bg-white p-3 shadow-sm">
+                        <svg className="h-6 w-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                         </svg>
                       </div>
-                      <h3 className="text-lg font-medium text-gray-900">
-                        {isDragging ? 'Drop the image here' : 'Upload a Photo (Optional)'}
-                      </h3>
-                      <p className="text-sm text-gray-500">
-                        {isDragging ? 'Release to upload' : 'Drag & drop an image here, or click to select'}
-                      </p>
-                      
-                      <div className="mt-4">
-                        <button
-                          type="button"
-                          onClick={handleClickUpload}
-                          className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#45a180]"
-                          style={{ backgroundColor: '#45a180', transition: 'all 0.2s' }}
-                          onMouseEnter={(e) => e.target.style.backgroundColor = '#378667'}
-                          onMouseLeave={(e) => e.target.style.backgroundColor = '#45a180'}
-                        >
-                          <svg className="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                            <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z" clipRule="evenodd" />
-                          </svg>
-                          Select Image
-                        </button>
-                        <input
-                          ref={fileInputRef}
-                          id="image"
-                          name="image"
-                          type="file"
-                          accept="image/*"
-                          onChange={handleImageChange}
-                          className="hidden"
-                        />
+                      <div className="text-center">
+                        <p className="text-sm font-medium text-gray-900">
+                          {isDragging ? 'Drop the image here' : 'Click to select'}
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          {isDragging ? 'Release to upload' : 'or drag and drop file here'}
+                        </p>
                       </div>
-                      {image && (
-                        <div className="mt-4 p-3 bg-green-50 rounded-md inline-flex items-center">
-                          <svg className="h-5 w-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                          </svg>
-                          <span className="text-sm text-green-700">{image.name}</span>
-                          <button
+                    </div>
+                  ) : (
+                    <div className="relative">
+                      <div className="group relative h-32 overflow-hidden rounded-lg border">
+                        <img
+                          src={URL.createObjectURL(image)}
+                          alt="Preview"
+                          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                        />
+                        <div className="absolute inset-0 bg-black/40 opacity-0 transition-opacity group-hover:opacity-100" />
+                        <div className="absolute inset-0 flex items-center justify-center gap-2 opacity-0 transition-opacity group-hover:opacity-100">
+                          <Button
+                            size="sm"
+                            variant="secondary"
+                            onClick={handleClickUpload}
+                            className="h-9 w-9 p-0"
                             type="button"
+                          >
+                            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                            </svg>
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="destructive"
                             onClick={() => {
                               setImage(null);
                               if (fileInputRef.current) {
                                 fileInputRef.current.value = '';
                               }
                             }}
-                            className="ml-2 text-gray-400 hover:text-gray-500"
+                            className="h-9 w-9 p-0"
+                            type="button"
                           >
-                            <span className="sr-only">Remove</span>
-                            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                          </Button>
+                        </div>
+                      </div>
+                      {image && (
+                        <div className="mt-2 flex items-center gap-2 text-sm text-gray-500">
+                          <span className="truncate">{image.name}</span>
+                          <button
+                            onClick={() => {
+                              setImage(null);
+                              if (fileInputRef.current) {
+                                fileInputRef.current.value = '';
+                              }
+                            }}
+                            className="ml-auto rounded-full p-1 hover:bg-gray-100"
+                            type="button"
+                          >
+                            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                             </svg>
                           </button>
                         </div>
                       )}
                     </div>
-                  </div>
-                  <p className="mt-2 text-xs text-gray-500">Supports JPG, PNG up to 5MB</p>
+                  )}
+                  <p className="text-xs text-gray-500">Supports JPG, PNG up to 5MB</p>
                 </div>
 
                 {/* Message */}
                 {message && (
                   <div className={`p-3 rounded-md ${message.includes('success') 
-                    ? 'bg-green-50 text-green-800' 
-                    : 'bg-red-50 text-red-800'
+                    ? 'bg-green-50 text-green-800 border border-green-200' 
+                    : 'bg-red-50 text-red-800 border border-red-200'
                   }`}>
                     {message}
                   </div>
                 )}
 
                 {/* Submit Button */}
-                <div className="mt-8">
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-base font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#45a180]"
-                    style={{ 
-                      backgroundColor: loading ? '#9CA3AF' : '#45a180',
-                      cursor: loading ? 'not-allowed' : 'pointer',
-                      transition: 'all 0.2s'
-                    }}
-                    onMouseEnter={(e) => !loading && (e.target.style.backgroundColor = '#378667')}
-                    onMouseLeave={(e) => !loading && (e.target.style.backgroundColor = '#45a180')}
-                  >
-                    {loading ? 'Submitting...' : 'Submit'}
-                  </button>
-                </div>
-            </form>
+                <Button type="submit" className="w-full" disabled={loading}>
+                  {loading ? 'Submitting...' : 'Submit Food Donation'}
+                </Button>
+              </form>
             </div>
             
             {/* Right column - Map */}
-            <div className="lg:w-1/2">
-              <div id="map" className="w-full h-96 rounded-lg shadow-lg" />
+            <div className="lg:sticky lg:top-6 lg:self-start">
+              <div className="w-full h-full bg-white rounded-lg border shadow-sm overflow-hidden">
+                <div className="p-4 border-b bg-white flex items-center justify-between">
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900">Location Map</h3>
+                    <p className="text-sm text-gray-600">Click on the map to select a location or use the search</p>
+                  </div>
+                  <button
+                    onClick={() => {
+                      if (navigator.geolocation) {
+                        navigator.geolocation.getCurrentPosition(
+                          (position) => {
+                            const location = {
+                              lat: position.coords.latitude,
+                              lng: position.coords.longitude
+                            };
+                            
+                            // Update map and marker
+                            if (map && marker) {
+                              map.setCenter(location);
+                              marker.setPosition(location);
+                              updateLocationAddress(location);
+                            }
+                          },
+                          (error) => {
+                            console.error('Error getting location:', error);
+                            alert('Unable to get your current location. Please select manually.');
+                          }
+                        );
+                      } else {
+                        alert('Geolocation is not supported by this browser.');
+                      }
+                    }}
+                    style={{
+                      padding: '12px 16px',
+                      backgroundColor: 'white',
+                      color: '#45a180',
+                      border: '1px solid #e0e0e0',
+                      borderRadius: '30px',
+                      fontSize: '14px',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      whiteSpace: 'nowrap',
+                      transition: 'all 0.2s ease',
+                      boxShadow: '0 1px 2px rgba(0,0,0,0.15)'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.target.style.backgroundColor = '#f5f5f5';
+                      e.target.style.transform = 'scale(1.02)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.target.style.backgroundColor = 'white';
+                      e.target.style.transform = 'scale(1)';
+                    }}
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                      <path
+                        d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3c-.46-4.17-3.77-7.48-7.94-7.94V1h-2v2.06C6.83 3.52 3.52 6.83 3.06 11H1v2h2.06c.46 4.17 3.77 7.48 7.94 7.94V23h2v-2.06c4.17-.46 7.48-3.77 7.94-7.94H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"
+                        fill="#45a180"
+                      />
+                    </svg>
+                    My Location
+                  </button>
+                </div>
+                <div id="map" className="w-full h-96" />
+              </div>
             </div>
           </div>
         </div>
@@ -585,25 +762,32 @@ export default function UploadFood() {
         }
         
         /* DatePicker custom styles */
+        .react-datepicker-wrapper {
+          width: 100% !important;
+        }
+        .react-datepicker__input-container {
+          width: 100% !important;
+        }
         .react-datepicker__input-container input {
-          color: #45a180 !important;
+          color: oklch(59.6% 0.145 163.225) !important;
+          width: 100% !important;
         }
         .react-datepicker__input-container input::placeholder {
-          color: #45a180 !important;
+          color: #6b7280 !important;
           opacity: 1;
         }
         .react-datepicker__day {
-          color: #45a180;
+          color: oklch(59.6% 0.145 163.225);
         }
         .react-datepicker__day:hover {
           background-color: #E5F5F0;
         }
         .react-datepicker__day--selected {
-          background-color: #45a180 !important;
+          background-color: #10b981 !important;
           color: white !important;
         }
         .react-datepicker__day--keyboard-selected {
-          background-color: #45a180 !important;
+          background-color: #10b981 !important;
           color: white !important;
         }
         .react-datepicker__header {
@@ -611,11 +795,11 @@ export default function UploadFood() {
         }
         .react-datepicker__current-month,
         .react-datepicker__day-name {
-          color: #45a180;
+          color: oklch(59.6% 0.145 163.225);
         }
         .react-datepicker__month-select,
         .react-datepicker__year-select {
-          color: #45a180;
+          color: oklch(59.6% 0.145 163.225);
         }
       `}</style>
     </>

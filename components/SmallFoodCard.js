@@ -1,6 +1,6 @@
 import Image from 'next/image';
 
-const SmallFoodCard = ({ foods, loading, error, formatDistance }) => {
+const SmallFoodCard = ({ foods, loading, error, formatDistance, onFoodCardClick }) => {
   // Calculate days until expiry
   const getDaysUntilExpiry = (expiryDate) => {
     const today = new Date();
@@ -61,8 +61,9 @@ const SmallFoodCard = ({ foods, loading, error, formatDistance }) => {
           return (
             <div 
               key={food._id} 
-              className="bg-white rounded-lg shadow-md overflow-hidden flex-shrink-0" 
+              className="bg-white rounded-lg shadow-md overflow-hidden flex-shrink-0 cursor-pointer hover:shadow-lg transition-all duration-200 hover:scale-105" 
               style={{ width: '280px' }}
+              onClick={() => onFoodCardClick && onFoodCardClick(food)}
             >
               {/* Food Image */}
               <div className="relative h-40 bg-gray-200">
