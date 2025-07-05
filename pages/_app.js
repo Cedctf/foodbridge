@@ -7,6 +7,7 @@ import Footer from "../components/Footer";
 import { UserProvider } from "../contexts/UserContext";
 import { Toaster } from 'react-hot-toast';
 import { useRouter } from 'next/router';
+import { MessageCircle, X } from "lucide-react";
 
 export default function App({ Component, pageProps }) {
   const [showChatbot, setShowChatbot] = useState(false);
@@ -36,6 +37,27 @@ export default function App({ Component, pageProps }) {
         
         {!isProfilePage && <Footer />}
         <Toaster position="bottom-center" />
+
+        {/* Floating Chatbot Button and Modal */}
+        <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end">
+          {showChatbot && (
+            <div className="mb-3 shadow-2xl rounded-2xl" style={{zIndex: 1000}}>
+              <Chatbot />
+            </div>
+          )}
+          <button
+            aria-label="Open Chatbot"
+            onClick={() => setShowChatbot((v) => !v)}
+            className="bg-gradient-to-br from-green-500 to-emerald-400 hover:from-green-600 hover:to-emerald-500 text-white rounded-full shadow-lg w-14 h-14 flex items-center justify-center transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-green-200"
+            style={{ boxShadow: '0 4px 24px #16a34a33' }}
+          >
+            {showChatbot ? (
+              <X className="h-6 w-6" />
+            ) : (
+              <MessageCircle className="h-6 w-6" />
+            )}
+          </button>
+        </div>
       </div>
     </UserProvider>
   );

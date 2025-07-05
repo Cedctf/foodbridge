@@ -290,7 +290,7 @@ export default function FoodListing() {
         <meta name="description" content="Browse available food items in your community" />
       </Head>
 
-      <div className={`${geistSans.className} min-h-screen bg-[#f7fcfa] pb-16`}>
+      <div className={`${geistSans.className} min-h-screen bg-gradient-to-br from-green-50 via-white to-emerald-50 pb-16`}>
         {/* Header */}
         <div className="pt-8">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -319,23 +319,11 @@ export default function FoodListing() {
                 value={searchFilter}
                 onChange={(e) => setSearchFilter(e.target.value)}
                 className="w-full pl-12 pr-4 py-3 border-none text-[#45A180] placeholder-[#45A180]/60 rounded-xl shadow-sm bg-white focus:outline-none"
-                placeholder="Search by location or food type"
+                placeholder="Search by food name"
               />
             </div>
 
             <div className="flex gap-3 mt-3">
-              <div className="flex-1">
-                <button
-                  onClick={() => {}}
-                  className="w-full px-4 py-2 bg-white rounded-lg shadow-sm hover:bg-gray-50 flex items-center justify-between text-[oklch(59.6%_0.145_163.225)]"
-                >
-                  <span>Location</span>
-                  <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </button>
-              </div>
-
               <div className="flex-1">
                 <select
                   value={foodTypeFilter}
