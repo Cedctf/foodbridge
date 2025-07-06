@@ -203,25 +203,30 @@ export default function Chat() {
               <div ref={messagesEndRef} />
             </div>
             {/* Input */}
-            <form onSubmit={sendMessage} className="flex items-center gap-2 px-6 py-4 bg-white/80 border-t border-gray-100">
-              <input
-                type="text"
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                onKeyPress={handleTyping}
-                onKeyUp={handleStopTyping}
-                onBlur={handleStopTyping}
-                placeholder="Type a message"
-                className="flex-1 bg-transparent text-gray-900 rounded-full px-5 py-3 focus:outline-none focus:ring-2 focus:ring-[oklch(59.6%_0.145_163.225)] border border-transparent focus:border-[oklch(59.6%_0.145_163.225)] shadow-sm transition-all"
-                disabled={!isConnected}
-              />
-              <button
-                type="submit"
-                disabled={!message.trim() || !isConnected}
-                className="bg-gradient-to-r from-emerald-400 to-emerald-600 hover:from-emerald-500 hover:to-emerald-700 disabled:bg-gray-600 text-white px-6 py-2 rounded-full transition-all duration-300 transform hover:scale-105 disabled:transform-none font-semibold shadow"
-              >
-                Send
-              </button>
+            <form onSubmit={sendMessage} className="px-6 py-4 bg-white/80 border-t border-gray-100">
+              <div className="flex items-center gap-2 mb-4">
+                <input
+                  type="text"
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  onKeyPress={handleTyping}
+                  onKeyUp={handleStopTyping}
+                  onBlur={handleStopTyping}
+                  placeholder="Type a message"
+                  className="flex-1 bg-transparent text-gray-900 rounded-full px-5 py-3 focus:outline-none focus:ring-2 focus:ring-[oklch(59.6%_0.145_163.225)] border border-transparent focus:border-[oklch(59.6%_0.145_163.225)] shadow-sm transition-all"
+                  disabled={!isConnected}
+                />
+                <button
+                  type="submit"
+                  disabled={!message.trim() || !isConnected}
+                  className="bg-gradient-to-r from-emerald-400 to-emerald-600 hover:from-emerald-500 hover:to-emerald-700 disabled:bg-gray-600 text-white px-6 py-2 rounded-full transition-all duration-300 transform hover:scale-105 disabled:transform-none font-semibold shadow"
+                >
+                  Send
+                </button>
+              </div>
+              <div className="text-xs text-gray-500 text-center">
+                Send as anonymous
+              </div>
             </form>
           </div>
         </div>

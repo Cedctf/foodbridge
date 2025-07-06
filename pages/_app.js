@@ -30,7 +30,7 @@ export default function App({ Component, pageProps }) {
 
         <div className="flex flex-col flex-grow">
           {!isProfilePage && <Navbar />}
-          <main className={`flex-grow ${!isProfilePage ? 'pt-16' : ''}`}>
+          <main className={`flex-grow ${!isProfilePage ? 'pt-20' : ''}`}>
             <Component {...pageProps} />
           </main>
         </div>
