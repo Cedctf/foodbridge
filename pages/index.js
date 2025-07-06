@@ -19,7 +19,7 @@ const geistMono = Geist_Mono({
 export default function ChatbotPage() {
   return (
     <>
-      <div className={`${geistSans.className} min-h-screen bg-gradient-to-br from-green-50 via-white to-emerald-50`}>
+      <div className={`${geistSans.className} min-h-screen bg-gradient-to-br from-green-50 via-white to-emerald-50 overflow-x-hidden`}>
         {/* <Navbar /> */}
         <Hero />
         <Features />

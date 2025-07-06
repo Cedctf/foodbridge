@@ -134,4 +134,55 @@ body {
   body {
     @apply bg-background text-foreground;
   }
+
+  /* Green scrollbar on white background for scroll components */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #fff;
+    border-radius: 8px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #10b981; /* emerald-500 */
+    border-radius: 8px;
+    border: 2px solid #fff;
+    background-clip: padding-box;
+    min-height: 40px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #059669; /* emerald-600 */
+  }
+  ::-webkit-scrollbar-corner {
+    background: #fff;
+  }
+  /* Firefox */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: #10b981 #fff;
+  }
+  /* Custom scroll container styles */
+  .custom-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: #10b981 #fff;
+    background: #fff;
+  }
+  .custom-scroll::-webkit-scrollbar {
+    width: 8px;
+  }
+  .custom-scroll::-webkit-scrollbar-track {
+    background: #fff;
+    border-radius: 8px;
+  }
+  .custom-scroll::-webkit-scrollbar-thumb {
+    background: #10b981;
+    border-radius: 8px;
+    border: 2px solid #fff;
+    background-clip: padding-box;
+    min-height: 40px;
+  }
+  .custom-scroll::-webkit-scrollbar-thumb:hover {
+    background: #059669;
+  }
 }

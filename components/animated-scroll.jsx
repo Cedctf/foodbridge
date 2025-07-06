@@ -97,6 +97,27 @@ export default function ScrollAdventure() {
 
   return (
     (<div className="relative overflow-hidden h-screen bg-black">
+      {/* Scroll Progress Indicator */}
+      <div className="fixed top-4 right-4 z-50">
+        <div className="bg-white/10 backdrop-blur-sm rounded-full p-2">
+          <div className="text-white text-sm font-medium">
+            {currentPage} / {numOfPages}
+          </div>
+        </div>
+      </div>
+      
+      {/* Scroll Instructions */}
+      <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50">
+        <div className="bg-white/10 backdrop-blur-sm rounded-full px-4 py-2">
+          <div className="text-white text-sm font-medium flex items-center gap-2">
+            <svg className="w-4 h-4 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+            </svg>
+            Scroll to navigate
+          </div>
+        </div>
+      </div>
+      
       {pages.map((page, i) => {
         const idx = i + 1;
         const isActive = currentPage === idx;
@@ -109,7 +130,7 @@ export default function ScrollAdventure() {
           (<div key={idx} className="absolute inset-0">
             {/* Left Half */}
             <div
-              className="absolute top-0 left-0 w-1/2 h-full transition-transform duration-[1000ms]"
+              className="absolute top-0 left-0 w-1/2 h-full transition-transform duration-[1000ms] ease-out"
               style={{ transform: leftTrans }}>
               <div
                 className="w-full h-full bg-cover bg-center bg-no-repeat"
@@ -131,7 +152,7 @@ export default function ScrollAdventure() {
             </div>
             {/* Right Half */}
             <div
-              className="absolute top-0 left-1/2 w-1/2 h-full transition-transform duration-[1000ms]"
+              className="absolute top-0 left-1/2 w-1/2 h-full transition-transform duration-[1000ms] ease-out"
               style={{ transform: rightTrans }}>
               <div
                 className="w-full h-full bg-cover bg-center bg-no-repeat"

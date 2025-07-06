@@ -129,6 +129,55 @@ const ScrollExpandMedia = ({
     (<div
       ref={sectionRef}
       className='transition-colors duration-700 ease-in-out overflow-x-hidden'>
+      {/* Scroll Progress Indicator */}
+      {!mediaFullyExpanded && (
+        <div className="fixed top-4 right-4 z-50">
+          <div className="bg-black/20 backdrop-blur-sm rounded-full p-3">
+            <div className="w-16 h-16 relative">
+              <svg className="w-16 h-16 transform -rotate-90" viewBox="0 0 36 36">
+                <path
+                  d="M18 2.0845
+                    a 15.9155 15.9155 0 0 1 0 31.831
+                    a 15.9155 15.9155 0 0 1 0 -31.831"
+                  fill="none"
+                  stroke="rgba(255,255,255,0.3)"
+                  strokeWidth="2"
+                />
+                <path
+                  d="M18 2.0845
+                    a 15.9155 15.9155 0 0 1 0 31.831
+                    a 15.9155 15.9155 0 0 1 0 -31.831"
+                  fill="none"
+                  stroke="#10b981"
+                  strokeWidth="2"
+                  strokeDasharray={`${scrollProgress * 100}, 100`}
+                  strokeLinecap="round"
+                />
+              </svg>
+              <div className="absolute inset-0 flex items-center justify-center">
+                <span className="text-white text-xs font-medium">
+                  {Math.round(scrollProgress * 100)}%
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {/* Scroll Instructions */}
+      {!mediaFullyExpanded && (
+        <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50">
+          <div className="bg-black/20 backdrop-blur-sm rounded-full px-4 py-2">
+            <div className="text-white text-sm font-medium flex items-center gap-2">
+              <svg className="w-4 h-4 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+              </svg>
+              Scroll to expand
+            </div>
+          </div>
+        </div>
+      )}
+      
       <section
         className='relative flex flex-col items-center justify-start min-h-[100dvh]'>
         <div className='relative w-full flex flex-col items-center min-h-[100dvh]'>
