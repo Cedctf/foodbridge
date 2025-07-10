@@ -44,13 +44,16 @@ export default async function handler(req, res) {
 
   try {
     const users = await getUsersCollection();
+    // Log the namespace (database.collection)
+    console.log("Using collection:", users.namespace);
 
     // Check if user already exists
     const existingUser = await users.findOne({
-      $or: [{ username }, { email }]
+      $or: [{ username }, { email: email.toLowerCase() }]
     });
 
     if (existingUser) {
+      console.log("User already exists:", existingUser);
       return res.status(400).json({ error: 'Username or email already exists' });
     }
 
@@ -67,8 +70,18 @@ export default async function handler(req, res) {
       updatedAt: new Date(),
     };
 
+    // Log the user to be inserted
+    console.log("Attempting to insert user:", newUser);
+
     // Insert user into database
     const result = await users.insertOne(newUser);
+
+    // Log the result of the insert
+    console.log("Insert result:", result);
+
+    if (!result.acknowledged) {
+      throw new Error('User insert not acknowledged by MongoDB');
+    }
 
     return res.status(201).json({ 
       success: true,

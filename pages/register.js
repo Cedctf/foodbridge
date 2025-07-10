@@ -17,6 +17,7 @@ export default function Register() {
   const router = useRouter();
   const { login } = useUser();
 
+  // Add handleChange function
   const handleChange = (e) => {
     setForm({
       ...form,
@@ -31,13 +32,21 @@ export default function Register() {
     setError('');
     setSuccess('');
     try {
-      // Registration logic here (same as before)
-      setTimeout(() => {
+      const response = await fetch('/api/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      });
+      const data = await response.json();
+      if (response.ok) {
         setSuccess('Registration successful!');
-        setLoading(false);
-      }, 1200);
+        setForm({ username: '', email: '', password: '' });
+      } else {
+        setError(data.error || 'Registration failed');
+      }
     } catch (err) {
       setError('Network error. Please check your connection and try again.');
+    } finally {
       setLoading(false);
     }
   };
