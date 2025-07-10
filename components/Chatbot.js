@@ -38,7 +38,7 @@ const Chatbot = () => {
 
   return (
     <div style={{
-      width: 300,
+      width: 400,
       background: '#fff',
       borderRadius: 24,
       boxShadow: '0 4px 32px 0 rgba(60, 60, 60, 0.08)',
@@ -52,7 +52,7 @@ const Chatbot = () => {
         <div
           style={{
             fontWeight: 800,
-            fontSize: 26,
+            fontSize: 22,
             marginBottom: 6,
             letterSpacing: '-0.5px',
             background: 'linear-gradient(90deg, #16A34A 30%, #4FC3F7 100%)',
@@ -60,6 +60,7 @@ const Chatbot = () => {
             WebkitTextFillColor: 'transparent',
             backgroundClip: 'text',
             textFillColor: 'transparent',
+            textAlign: 'center',
           }}
         >
           Welcome to FoodBridge Chatbot
@@ -72,7 +73,7 @@ const Chatbot = () => {
       {/* End Header Section */}
       <div style={{
         width: '100%',
-        height: 180,
+        height: 280,
         overflowY: 'auto',
         background: '#F6FBF8',
         borderRadius: 16,
@@ -98,7 +99,7 @@ const Chatbot = () => {
         ))}
         <div ref={messagesEndRef} />
       </div>
-      <div style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 10 }}>
+      <div style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 8 }}>
         <input
           type="text"
           value={input}
@@ -115,28 +116,28 @@ const Chatbot = () => {
             background: '#F6FBF8',
             marginRight: 0,
             transition: 'border 0.2s',
+            minWidth: '320px',
           }}
         />
         <button
           onClick={sendMessage}
           style={{
-            background: '#16A34A',
+            background: 'transparent',
             border: 'none',
-            borderRadius: 16,
-            width: 40,
+            borderRadius: 10,
+            width: 120,
             height: 36,
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            color: '#fff',
+            color: '#16A34A',
             fontSize: 18,
             fontWeight: 600,
-            boxShadow: '0 2px 8px #16a34a22',
-            transition: 'background 0.2s',
+            transition: 'color 0.2s',
           }}
         >
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13" /><polygon points="22 2 15 22 11 13 2 9 22 2" /></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#16A34A" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13" /><polygon points="22 2 15 22 11 13 2 9 22 2" /></svg>
         </button>
       </div>
     </div>
