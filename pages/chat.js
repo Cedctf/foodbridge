@@ -27,10 +27,58 @@ export default function Chat() {
   };
 
   useEffect(() => {
+    // This flag prevents the effect from running twice in strict mode
+    if (didMountRef.current) return;
+    didMountRef.current = true;
+
+    const socketInitializer = async () => {
+      // Ensure we're on the client side
+      if (typeof window === 'undefined') return;
+
+      await fetch('/api/socket');
+      socket = io(undefined, { path: '/api/socket' });
+
+      socket.on('connect', () => {
+        setIsConnected(true);
+      });
+
+      socket.on('disconnect', () => {
+        setIsConnected(false);
+      });
+
+      socket.on('chat message', (msg) => {
+        setMessages((prev) => [...prev, msg]);
+      });
+
+      socket.on('user count', (count) => {
+        setOnlineUsers(count);
+      });
+
+      socket.on('typing', (data) => {
+        setTypingUsers((prev) => {
+          if (!prev.find(u => u.socketId === data.socketId)) {
+            return [...prev, data];
+          }
+          return prev;
+        });
+      });
+
+      socket.on('stop typing', (data) => {
+        setTypingUsers((prev) => prev.filter(u => u.socketId !== data.socketId));
+      });
+    };
+
     socketInitializer();
+
     return () => {
       if (socket) {
         socket.disconnect();
+        socket.off('connect');
+        socket.off('disconnect');
+        socket.off('chat message');
+        socket.off('user count');
+        socket.off('typing');
+        socket.off('stop typing');
       }
     };
   }, []);
@@ -141,18 +189,7 @@ export default function Chat() {
             {/* Header - white background, horizontal line */}
             <div className="bg-white rounded-t-lg p-4 border-b border-gray-200">
               <div className="flex justify-between items-center">
-                <h1 className="text-lg font-semibold text-gray-900">Community Chat</h1>
-                <div className="flex items-center space-x-4">
-                  <div className="flex items-center space-x-2">
-                    <div className={`w-2.5 h-2.5 rounded-full ${isConnected ? 'bg-green-500' : 'bg-red-500'}`}></div>
-                    <span className="text-sm text-gray-700">
-                      {isConnected ? 'Connected' : 'Disconnected'}
-                    </span>
-                  </div>
-                  <div className="text-sm text-gray-700">
-                    {onlineUsers} users online
-                  </div>
-                </div>
+                <h1 className="text-2xl font-bold text-gray-800">Chat</h1>
               </div>
             </div>
             {/* Messages */}

@@ -30,14 +30,35 @@ export default function Register() {
     setLoading(true);
     setError('');
     setSuccess('');
+
+    if (!form.username || !form.email || !form.password) {
+      setError('All fields are required.');
+      setLoading(false);
+      return;
+    }
+
     try {
-      // Registration logic here (same as before)
-      setTimeout(() => {
-        setSuccess('Registration successful!');
-        setLoading(false);
-      }, 1200);
+      const res = await fetch('/api/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(form),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        setSuccess('Registration successful! Redirecting to login...');
+        setTimeout(() => {
+          router.push('/login');
+        }, 2000);
+      } else {
+        setError(data.error || 'An error occurred during registration.');
+      }
     } catch (err) {
       setError('Network error. Please check your connection and try again.');
+    } finally {
       setLoading(false);
     }
   };

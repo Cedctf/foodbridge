@@ -151,27 +151,31 @@ export default function UploadFood() {
 
   useEffect(() => {
     // Check if window is defined (client-side)
-    if (typeof window !== 'undefined' && !window.google) {
-      const script = document.createElement('script');
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places`;
-      script.async = true;
-      script.id = 'google-maps-script';
-      script.onload = () => {
-        setIsScriptLoaded(true);
-        if (initMap) initMap();
-      };
-      document.body.appendChild(script);
+    if (typeof window !== 'undefined') {
+      if (!window.google) {
+        const script = document.createElement('script');
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places`;
+        script.async = true;
+        script.id = 'google-maps-script';
+        script.onload = () => {
+          setIsScriptLoaded(true);
+          initMap();
+        };
+        document.body.appendChild(script);
 
-      return () => {
-        const scriptElement = document.getElementById('google-maps-script');
-        if (scriptElement) {
-          document.body.removeChild(scriptElement);
-        }
-      };
-    } else {
-      setIsScriptLoaded(true);
+        return () => {
+          const scriptElement = document.getElementById('google-maps-script');
+          if (scriptElement) {
+            document.body.removeChild(scriptElement);
+          }
+        };
+      } else {
+        // Google Maps API is already loaded
+        setIsScriptLoaded(true);
+        initMap();
+      }
     }
-  }, []);
+  }, [router.pathname]); // Re-run when pathname changes to ensure map loads on navigation
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
