@@ -2,6 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { HandWrittenTitle } from './HandWrittenTitle';
+import Image from 'next/image';
 
 export default function CallToAction() {
   return (
@@ -37,9 +38,11 @@ export default function CallToAction() {
             <div className="relative">
               <div className="aspect-[4/3] rounded-2xl overflow-hidden shadow-lg transform hover:scale-[1.02] transition-transform duration-300">
                 <div className="absolute inset-0 bg-gradient-to-tr from-green-400/20 to-transparent"></div>
-                <img 
+                <Image 
                   src="/images/feature-card3.png" 
                   alt="Food sharing" 
+                  fill
+                  style={{ objectFit: 'cover' }}
                   className="w-full h-full object-cover"
                 />
               </div>

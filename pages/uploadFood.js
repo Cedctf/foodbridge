@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import Head from 'next/head';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -6,6 +6,7 @@ import { LoadScript, Autocomplete } from '@react-google-maps/api';
 import { useRouter } from 'next/router';
 import { useAuth } from '../hooks/useAuth';
 import React from 'react';
+import Image from 'next/image';
 
 // Custom Input component
 const CustomInput = React.forwardRef(({ className, type, value, ...props }, ref) => {
@@ -19,6 +20,9 @@ const CustomInput = React.forwardRef(({ className, type, value, ...props }, ref)
     />
   );
 });
+
+// Add this at the top after imports
+CustomInput.displayName = 'CustomInput';
 
 // Custom Select component
 const CustomSelect = ({
@@ -148,34 +152,6 @@ export default function UploadFood() {
     { value: "Prepared Meals", label: "Prepared Meals" },
     { value: "Other", label: "Other" },
   ];
-
-  useEffect(() => {
-    // Check if window is defined (client-side)
-    if (typeof window !== 'undefined') {
-      if (!window.google) {
-        const script = document.createElement('script');
-        script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places`;
-        script.async = true;
-        script.id = 'google-maps-script';
-        script.onload = () => {
-          setIsScriptLoaded(true);
-          initMap();
-        };
-        document.body.appendChild(script);
-
-        return () => {
-          const scriptElement = document.getElementById('google-maps-script');
-          if (scriptElement) {
-            document.body.removeChild(scriptElement);
-          }
-        };
-      } else {
-        // Google Maps API is already loaded
-        setIsScriptLoaded(true);
-        initMap();
-      }
-    }
-  }, [router.pathname]); // Re-run when pathname changes to ensure map loads on navigation
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -332,8 +308,8 @@ export default function UploadFood() {
     }
   };
 
-  const initMap = () => {
-    if (typeof window !== 'undefined') {
+  const initMap = useCallback(() => {
+    if (typeof window !== 'undefined' && window.google) {
       // Get user location
       navigator.geolocation.getCurrentPosition(
         (position) => {
@@ -387,7 +363,35 @@ export default function UploadFood() {
         }
       );
     }
-  };
+  }, []); // Empty dependency array as it doesn't depend on component props/state
+
+  useEffect(() => {
+    // Check if window is defined (client-side)
+    if (typeof window !== 'undefined') {
+      if (!window.google) {
+        const script = document.createElement('script');
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places`;
+        script.async = true;
+        script.id = 'google-maps-script';
+        script.onload = () => {
+          setIsScriptLoaded(true);
+          initMap();
+        };
+        document.body.appendChild(script);
+
+        return () => {
+          const scriptElement = document.getElementById('google-maps-script');
+          if (scriptElement) {
+            document.body.removeChild(scriptElement);
+          }
+        };
+      } else {
+        // Google Maps API is already loaded
+        setIsScriptLoaded(true);
+        initMap();
+      }
+    }
+  }, [initMap]);
   
   const updateLocationAddress = (latLng) => {
     if (window.google && window.google.maps) {
@@ -610,10 +614,12 @@ export default function UploadFood() {
                   ) : (
                     <div className="relative">
                       <div className="group relative h-32 overflow-hidden rounded-lg border">
-                        <img
+                        <Image
                           src={URL.createObjectURL(image)}
                           alt="Preview"
+                          fill
                           className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                          style={{ objectFit: 'cover' }}
                         />
                         <div className="absolute inset-0 bg-black/40 opacity-0 transition-opacity group-hover:opacity-100" />
                         <div className="absolute inset-0 flex items-center justify-center gap-2 opacity-0 transition-opacity group-hover:opacity-100">

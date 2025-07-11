@@ -1,12 +1,12 @@
 import Footer from '../components/Footer'
 import Chatbot from '../components/Chatbot'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/router'
 import Image from 'next/image'
 import { LoadScript, GoogleMap, Marker } from '@react-google-maps/api'
 import { useUser } from '../contexts/UserContext'
 import { Mail, ArrowRight, ArrowLeft, Check } from "lucide-react"
-import { motion, AnimatePresence } from "motion/react"
+import { motion, AnimatePresence } from "framer-motion";
 
 const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
@@ -83,8 +83,45 @@ export default function RequestPage() {
   ];
 
   useEffect(() => {
-    console.log('Router is ready:', router.isReady);
-    console.log('foodId from query:', foodId);
+    const fetchFoodData = async () => {
+      try {
+        console.log('Fetching food data for ID:', foodId);
+        const response = await fetch(`/api/foods?id=${foodId}`);
+        const result = await response.json();
+        console.log('API response:', result);
+        if (result.success) {
+          setFoodData(result.data);
+          console.log('Food data set:', result.data);
+          
+          if (result.data.locationAddress && typeof window.google !== 'undefined' && window.google.maps) {
+            try {
+              const geocoder = new window.google.maps.Geocoder();
+              geocoder.geocode({ address: result.data.locationAddress }, (results, status) => {
+                if (status === 'OK' && results[0]) {
+                  const location = results[0].geometry.location;
+                  setMapCenter({
+                    lat: location.lat(),
+                    lng: location.lng()
+                  });
+                  console.log('Updated map center:', { lat: location.lat(), lng: location.lng() });
+                } else {
+                  console.log('Geocoding failed:', status);
+                }
+              });
+            } catch (error) {
+              console.log('Google Maps API not loaded yet:', error);
+            }
+          }
+        } else {
+          console.log('API request not successful:', result.message);
+        }
+      } catch (error) {
+        console.error('Error fetching food data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     if (router.isReady && foodId) {
       fetchFoodData();
     }
@@ -101,46 +138,6 @@ export default function RequestPage() {
       }));
     }
   }, [isAuthenticated, user]);
-
-  const fetchFoodData = async () => {
-    try {
-      console.log('Fetching food data for ID:', foodId);
-      const response = await fetch(`/api/foods?id=${foodId}`);
-      const result = await response.json();
-      console.log('API response:', result);
-      if (result.success) {
-        setFoodData(result.data);
-        console.log('Food data set:', result.data);
-        
-        // Get coordinates from the address using Google Geocoding service
-        if (result.data.locationAddress && typeof google !== 'undefined' && google.maps) {
-          try {
-            const geocoder = new google.maps.Geocoder();
-            geocoder.geocode({ address: result.data.locationAddress }, (results, status) => {
-              if (status === 'OK' && results[0]) {
-                const location = results[0].geometry.location;
-                setMapCenter({
-                  lat: location.lat(),
-                  lng: location.lng()
-                });
-                console.log('Updated map center:', { lat: location.lat(), lng: location.lng() });
-              } else {
-                console.log('Geocoding failed:', status);
-              }
-            });
-          } catch (error) {
-            console.log('Google Maps API not loaded yet:', error);
-          }
-        }
-      } else {
-        console.log('API request not successful:', result.message);
-      }
-    } catch (error) {
-      console.error('Error fetching food data:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -313,7 +310,7 @@ export default function RequestPage() {
         <section id="map" className="mt-8">
           <h2 className="text-xl font-semibold mb-4 text-gray-900">Donor Information</h2>
           <div className="flex items-center mb-4">
-            <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Donor" className="w-12 h-12 rounded-full mr-4" />
+            <Image src="https://randomuser.me/api/portraits/women/44.jpg" alt="Donor" width={48} height={48} className="w-12 h-12 rounded-full mr-4" />
             <div>
               <div className="font-semibold text-gray-900">Superwoman</div>
               <div className="text-xs text-gray-600">created: 2 hours ago</div>
@@ -345,7 +342,7 @@ export default function RequestPage() {
                     <Marker
                       position={mapCenter}
                       title={foodData.name}
-                      animation={typeof google !== 'undefined' && google.maps ? google.maps.Animation.DROP : undefined}
+                      animation={typeof window.google !== 'undefined' && window.google.maps ? window.google.maps.Animation.DROP : undefined}
                     />
                   )}
                 </GoogleMap>

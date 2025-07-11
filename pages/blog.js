@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import Head from 'next/head';
+import Image from 'next/image';
 import BlogSearch from '../components/BlogSearch';
 import BlogCategories from '../components/BlogCategories';
 import { Card } from "@/components/ui/card";
@@ -175,9 +176,11 @@ export default function Blog() {
                         <div className="order-first sm:order-last sm:col-span-5">
                           <a href={`/blog/${post.slug}`} className="block">
                             <div className="aspect-[21/9] overflow-clip rounded-lg border border-border">
-                              <img
+                              <Image
                                 src={post.imageUrl}
                                 alt={post.title}
+                                fill
+                                style={{ objectFit: 'cover' }}
                                 className="h-full w-full object-cover transition-opacity duration-200 fade-in hover:opacity-70" />
                             </div>
                           </a>

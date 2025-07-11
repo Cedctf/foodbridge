@@ -2,6 +2,7 @@ import { useProtectedRoute } from '../hooks/useAuth';
 import { useUser } from '../contexts/UserContext';
 import Head from 'next/head';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from "framer-motion";
 import { Home, Settings, Bell, Upload, FileText, LogOut, Package, MapPin, BookOpen, Menu, X } from "lucide-react";
@@ -661,9 +662,11 @@ export default function Profile() {
                           >
                             <td className={`py-4 px-6 ${idx === 0 ? 'rounded-tl-[16px]' : ''} ${isLast ? 'rounded-bl-[16px]' : ''}`}>
                               {donation.imageUrl ? (
-                                <img
+                                <Image
                                   src={donation.imageUrl}
                                   alt={donation.name}
+                                  width={56}
+                                  height={56}
                                   className="w-14 h-14 object-cover rounded-md border border-[#E0E0E0] shadow-md"
                                 />
                               ) : (

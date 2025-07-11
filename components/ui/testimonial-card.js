@@ -49,5 +49,3 @@ export function TestimonialCard({
     </Card>
   )
 }
-
-export { TestimonialAuthor }

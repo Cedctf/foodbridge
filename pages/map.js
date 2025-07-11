@@ -1,5 +1,5 @@
 import dynamic from 'next/dynamic';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/router';
 import SmallFoodCard from '../components/SmallFoodCard';
 import LocationPin from '../components/LocationPin';
@@ -745,7 +745,7 @@ export default function MapPage() {
   const [selectedFood, setSelectedFood] = useState(null);
 
   // Geocode food addresses to get coordinates
-  const geocodeFoodAddresses = async (foodItems) => {
+  const geocodeFoodAddresses = useCallback(async (foodItems) => {
     const newGeocodedFoods = new Map(geocodedFoods);
     const foodsToGeocode = [];
 
@@ -770,22 +770,16 @@ export default function MapPage() {
 
     setGeocodedFoods(newGeocodedFoods);
     return newGeocodedFoods;
-  };
+  }, [geocodedFoods]);
 
-  // Fetch food data from API
-  useEffect(() => {
-    fetchFoods();
-    getUserLocation();
-  }, []);
 
-  const fetchFoods = async () => {
+  const fetchFoods = useCallback(async () => {
     try {
       setLoading(true);
       const response = await fetch('/api/foods');
       const result = await response.json();
 
       if (result.success) {
-        // Geocode addresses first, then set foods
         await geocodeFoodAddresses(result.data);
         setFoods(result.data);
       } else {
@@ -797,10 +791,10 @@ export default function MapPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [geocodeFoodAddresses]);
 
   // Get user's current location
-  const getUserLocation = () => {
+  const getUserLocation = useCallback(() => {
     if (!navigator.geolocation) {
       setError('Geolocation is not supported by this browser');
       return;
@@ -813,16 +807,20 @@ export default function MapPage() {
           lng: position.coords.longitude
         };
         setUserLocation(userLoc);
-        // Automatically set the active map location to user's current location
         setActiveMapLocation(userLoc);
       },
       (error) => {
         console.error('Error getting location:', error);
         setError('Unable to retrieve your location');
-        // Keep default location if geolocation fails
       }
     );
-  };
+  }, []);
+
+  // Fetch food data from API
+  useEffect(() => {
+    fetchFoods();
+    getUserLocation();
+  }, [fetchFoods, getUserLocation]);
 
   // Handle location change from map
   const handleMapLocationChange = (location) => {

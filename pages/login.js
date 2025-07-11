@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useMemo } from 'react';
+import { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import { useRouter } from 'next/router';
 import { useUser } from '../contexts/UserContext';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -199,7 +199,7 @@ const ShaderMaterial = ({
     timeLocation.value = timestamp;
   });
 
-  const getUniforms = () => {
+  const getUniforms = useCallback(() => {
     const preparedUniforms = {};
 
     for (const uniformName in uniforms) {
@@ -245,7 +245,7 @@ const ShaderMaterial = ({
       value: new THREE.Vector2(size.width * 2, size.height * 2),
     };
     return preparedUniforms;
-  };
+  }, [uniforms, size.width, size.height]);
 
   const material = useMemo(() => {
     const materialObject = new THREE.ShaderMaterial({
@@ -271,7 +271,7 @@ const ShaderMaterial = ({
     });
 
     return materialObject;
-  }, [size.width, size.height, source]);
+  }, [source, getUniforms]);
 
   return (
     <mesh ref={ref}>
@@ -469,7 +469,7 @@ export default function Login() {
                      </motion.p>
                      
                      <p className="text-gray-600 text-sm">
-                       Don't have an account?{' '}
+                       Don&apos;t have an account?{' '}
                        <Link
                          href="/register"
                          className="underline text-emerald-600 hover:text-emerald-700 transition-colors">

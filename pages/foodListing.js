@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Head from 'next/head';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
@@ -25,56 +25,31 @@ export default function FoodListing() {
   const [notification, setNotification] = useState(null);
   const [requestsLoading, setRequestsLoading] = useState(false);
 
-  useEffect(() => {
-    fetchFoods();
-    loadUserRequests();
-
-    // Reload user requests when page regains focus (user comes back from other pages)
-    const handleFocus = () => {
-      loadUserRequests();
-    };
-
-    // Auto-refresh expired items every 5 minutes to keep listings current
-    const intervalId = setInterval(() => {
-      fetchFoods();
-      // Optional: Show subtle notification that listings were refreshed
-      if (foods.length > 0) {
-        showNotification('Listings refreshed - expired items removed', 'info');
-      }
-    }, 5 * 60 * 1000); // 5 minutes
-
-    window.addEventListener('focus', handleFocus);
-    return () => {
-      window.removeEventListener('focus', handleFocus);
-      clearInterval(intervalId);
-    };
+  const showNotification = useCallback((message, type = 'info') => {
+    setNotification({ message, type });
+    setTimeout(() => setNotification(null), 3000);
   }, []);
 
-  // Reload requests when user authentication status changes
-  useEffect(() => {
-    loadUserRequests();
-  }, [isAuthenticated, user]);
+  const fetchFoods = useCallback(async () => {
+    try {
+      setLoading(true);
+      const response = await fetch('/api/foods');
+      const result = await response.json();
 
-  // Separate useEffect to handle router query changes
-  useEffect(() => {
-    // Check if redirected from successful request submission
-    if (router.query.requestSuccess === 'true') {
-      showNotification('Request automatically approved! You can contact the donor. 🎉', 'success');
-      
-      // Refresh both food list and user requests to reflect the changes
-      fetchFoods();
-      loadUserRequests();
-      
-      // Clean up URL parameter using Next.js router
-      const { requestSuccess, ...restQuery } = router.query;
-      router.replace({
-        pathname: router.pathname,
-        query: restQuery
-      }, undefined, { shallow: true });
+      if (result.success) {
+        setFoods(result.data);
+      } else {
+        setError(result.message || 'Failed to fetch food items');
+      }
+    } catch (error) {
+      console.error('Error fetching foods:', error);
+      setError('An error occurred while fetching food items');
+    } finally {
+      setLoading(false);
     }
-  }, [router.query.requestSuccess]);
+  }, []);
 
-  const loadUserRequests = async () => {
+  const loadUserRequests = useCallback(async () => {
     setRequestsLoading(true);
     try {
       let requests = [];
@@ -146,26 +121,56 @@ export default function FoodListing() {
     } finally {
       setRequestsLoading(false);
     }
-  };
+  }, [isAuthenticated, user]);
 
-  const fetchFoods = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch('/api/foods');
-      const result = await response.json();
+  useEffect(() => {
+    fetchFoods();
+    loadUserRequests();
 
-      if (result.success) {
-        setFoods(result.data);
-      } else {
-        setError(result.message || 'Failed to fetch food items');
+    // Reload user requests when page regains focus (user comes back from other pages)
+    const handleFocus = () => {
+      loadUserRequests();
+    };
+
+    // Auto-refresh expired items every 5 minutes to keep listings current
+    const intervalId = setInterval(() => {
+      fetchFoods();
+      // Optional: Show subtle notification that listings were refreshed
+      if (foods.length > 0) {
+        showNotification('Listings refreshed - expired items removed', 'info');
       }
-    } catch (error) {
-      console.error('Error fetching foods:', error);
-      setError('An error occurred while fetching food items');
-    } finally {
-      setLoading(false);
+    }, 5 * 60 * 1000); // 5 minutes
+
+    window.addEventListener('focus', handleFocus);
+    return () => {
+      window.removeEventListener('focus', handleFocus);
+      clearInterval(intervalId);
+    };
+  }, [fetchFoods, loadUserRequests, showNotification, foods.length]);
+
+  // Reload requests when user authentication status changes
+  useEffect(() => {
+    loadUserRequests();
+  }, [isAuthenticated, user, loadUserRequests]);
+
+  // Separate useEffect to handle router query changes
+  useEffect(() => {
+    // Check if redirected from successful request submission
+    if (router.query.requestSuccess === 'true') {
+      showNotification('Request automatically approved! You can contact the donor. 🎉', 'success');
+      
+      // Refresh both food list and user requests to reflect the changes
+      fetchFoods();
+      loadUserRequests();
+      
+      // Clean up URL parameter using Next.js router
+      const { requestSuccess, ...restQuery } = router.query;
+      router.replace({
+        pathname: router.pathname,
+        query: restQuery
+      }, undefined, { shallow: true });
     }
-  };
+  }, [router.query.requestSuccess, router, fetchFoods, loadUserRequests, showNotification]);
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -201,11 +206,6 @@ export default function FoodListing() {
       const localRequests = JSON.parse(localStorage.getItem('userRequests') || '[]');
       return localRequests.some(request => request.foodId === foodId);
     }
-  };
-
-  const showNotification = (message, type = 'info') => {
-    setNotification({ message, type });
-    setTimeout(() => setNotification(null), 3000);
   };
 
   const handleContactClick = async (food) => {

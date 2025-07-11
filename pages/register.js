@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import Image from 'next/image';
 import { useUser } from '../contexts/UserContext';
 import { Mail, Lock, Gift, ArrowRight, Facebook, Apple, CircleUserRound } from 'lucide-react';
+import Link from 'next/link';
 
 export default function Register() {
   const [form, setForm] = useState({
@@ -135,7 +136,7 @@ export default function Register() {
           <div className="pt-6">
             <p className="text-sm text-gray-500 text-center">
               Already have an account?{' '}
-              <a href="/login" className="underline text-[#45a180] hover:text-[#37806b] transition-colors">Sign in here</a>
+              <Link href="/login" className="underline text-[#45a180] hover:text-[#37806b] transition-colors">Sign in here</Link>
             </p>
           </div>
         </div>
