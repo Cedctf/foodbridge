@@ -58,7 +58,44 @@ function runMiddleware(req, res, fn) {
 }
 
 export default async function handler(req, res) {
-  if (req.method === 'POST') {
+  if (req.method === 'GET') {
+    try {
+      console.log('Attempting to fetch food items...');
+      const foodCollection = await getFoodCollection();
+      
+      // Check if an ID is provided in the query
+      if (req.query.id) {
+        const food = await foodCollection.findOne({ _id: req.query.id });
+        if (!food) {
+          return res.status(404).json({
+            success: false,
+            message: 'Food item not found'
+          });
+        }
+        return res.status(200).json({
+          success: true,
+          data: food
+        });
+      }
+
+      // Get all food items
+      const foods = await foodCollection.find({}).toArray();
+      console.log(`Successfully fetched ${foods.length} food items`);
+      
+      return res.status(200).json({
+        success: true,
+        data: foods
+      });
+
+    } catch (error) {
+      console.error('Error in GET /api/foods:', error);
+      return res.status(500).json({
+        success: false,
+        message: 'Failed to fetch food items',
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      });
+    }
+  } else if (req.method === 'POST') {
     try {
       // Run multer middleware to handle file upload
       await runMiddleware(req, res, upload.single('image'));
@@ -191,63 +228,6 @@ export default async function handler(req, res) {
         success: false,
         message: 'Internal server error',
         error: process.env.NODE_ENV === 'development' ? error.message : undefined
-      });
-    }
-  } else if (req.method === 'GET') {
-    try {
-      const foodCollection = await getFoodCollection();
-      
-      // Check if an ID is provided in the query
-      if (req.query.id) {
-        const { ObjectId } = require('mongodb');
-        try {
-          const food = await foodCollection.findOne({ _id: new ObjectId(req.query.id) });
-          if (food) {
-            return res.status(200).json({
-              success: true,
-              data: food
-            });
-          } else {
-            return res.status(404).json({
-              success: false,
-              message: 'Food item not found'
-            });
-          }
-        } catch (error) {
-          return res.status(400).json({
-            success: false,
-            message: 'Invalid food ID format'
-          });
-        }
-      }
-
-      // If no ID provided, return all available food items (exclude claimed and expired items)
-      const now = new Date();
-      
-      let query;
-      if (req.query.includeAll === 'true') {
-        // Return all items if explicitly requested (for admin/donor views)
-        query = {};
-      } else {
-        // Exclude claimed items AND expired items for public listings
-        query = {
-          $and: [
-            { $or: [{ status: { $ne: 'claimed' } }, { status: { $exists: false } }] }, // Not claimed
-            { expiryDate: { $gte: now } } // Not expired
-          ]
-        };
-      }
-      
-      const foods = await foodCollection.find(query).sort({ createdAt: -1 }).toArray();
-      res.status(200).json({
-        success: true,
-        data: foods
-      });
-    } catch (error) {
-      console.error('Error fetching food items:', error);
-      res.status(500).json({
-        success: false,
-        message: 'Failed to fetch food items'
       });
     }
   } else {
