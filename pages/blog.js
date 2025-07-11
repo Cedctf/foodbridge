@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import Head from 'next/head';
 import Image from 'next/image';
+import Link from 'next/link';
 import BlogSearch from '../components/BlogSearch';
 import BlogCategories from '../components/BlogCategories';
 import { Card } from "@/components/ui/card";
@@ -149,9 +150,9 @@ export default function Blog() {
                             </div>
                           </div>
                           <h3 className="text-xl font-semibold md:text-2xl lg:text-3xl">
-                            <a href={`/blog/${post.slug}`} className="hover:underline">
+                            <Link href={`/blog/${post.slug}`} className="hover:underline">
                               {post.title}
-                            </a>
+                            </Link>
                           </h3>
                           <p className="mt-4 text-muted-foreground md:mt-5">
                             {post.excerpt}
@@ -164,26 +165,25 @@ export default function Blog() {
                             </span>
                           </div>
                           <div className="mt-6 flex items-center space-x-2 md:mt-8">
-                            <a
+                            <Link
                               href={`/blog/${post.slug}`}
                               className="inline-flex items-center font-semibold hover:underline md:text-base"
                               style={{ color: 'oklch(59.6% 0.145 163.225)' }}>
                               <span>Read more</span>
                               <ArrowRight className="ml-2 size-4 transition-transform" />
-                            </a>
+                            </Link>
                           </div>
                         </div>
                         <div className="order-first sm:order-last sm:col-span-5">
-                          <a href={`/blog/${post.slug}`} className="block">
-                            <div className="aspect-[21/9] overflow-clip rounded-lg border border-border">
+                          <Link href={`/blog/${post.slug}`} className="block">
+                            <div className="relative aspect-[21/9] overflow-clip rounded-lg border border-border">
                               <Image
                                 src={post.imageUrl}
                                 alt={post.title}
                                 fill
-                                style={{ objectFit: 'cover' }}
                                 className="h-full w-full object-cover transition-opacity duration-200 fade-in hover:opacity-70" />
                             </div>
-                          </a>
+                          </Link>
                         </div>
                       </div>
                     </Card>
