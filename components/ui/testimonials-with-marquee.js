@@ -70,9 +70,9 @@ export function TestimonialsSection({
         </div>
 
         <div className="relative flex w-full flex-col items-center justify-center overflow-hidden">
-          <div className="group flex overflow-hidden p-2" style={marqueeStyle}>
+          <div className="group flex overflow-hidden p-2 rounded-2xl" style={marqueeStyle}>
             <div
-              className="flex flex-row group-hover:[animation-play-state:paused]"
+              className="flex flex-row group-hover:[animation-play-state:paused] transition-all duration-300"
               style={{ animation: "scroll-x var(--duration) linear infinite", gap: "var(--gap)" }}
             >
               {[...testimonials, ...testimonials].map((testimonial, i) => (
